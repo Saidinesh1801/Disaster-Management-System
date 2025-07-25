@@ -14,8 +14,13 @@ Modern User Interface: A clean and responsive design with custom themes and styl
 Technologies Used:
 
 HTML5
+
 CSS3 (with custom enhancements)
+
 JavaScript (including EmailJS for email functionality)
+
+NOdeJs(for Backend)
+
 This project aims to provide a vital tool for organizations and individuals involved in disaster preparedness, response, and mitigation efforts.
 
 
