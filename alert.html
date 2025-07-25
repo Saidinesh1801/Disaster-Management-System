@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alerts - Disaster Management System</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/modern-theme.css">
+    <link rel="stylesheet" href="css/table-text-fix.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- jQuery (load first) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Morning Email Service (load early to ensure it's available) -->
+    <script src="js/morning-email-service.js"></script>
+
+    <!-- Force real email mode CSS -->
+    <link rel="stylesheet" href="css/force-real-email.css">
+    <!-- Select2 CSS for better multi-select dropdowns -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <!-- Select2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <!-- EmailJS for sending emails (latest version) -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <!-- Storage utilities -->
+    <script src="js/storage-utils.js"></script>
+    <!-- Direct email service (new implementation) -->
+    <script src="js/direct-email.js"></script>
+    <!-- Direct alert handler (new implementation) -->
+    <script src="js/direct-alert-handler.js"></script>
+    <!-- Test alert script -->
+    <script src="js/test-alert.js"></script>
+    <!-- Create test user script -->
+    <script src="js/create-test-user.js"></script>
+    <!-- Navigation Menu Enhancement -->
+    <script src="js/nav-menu.js"></script>
+    <!-- Alert Debug Script -->
+    <script src="js/alert-debug.js"></script>
+    <!-- Create Test Login Script -->
+    <script src="js/create-test-login.js"></script>
+    <!-- Direct Alert Creator -->
+    <script src="js/direct-alert-creator.js"></script>
+    <!-- Form Submit Fix -->
+    <script src="js/form-submit-fix.js"></script>
+    <!-- Emergency Alert Creator -->
+    <script src="js/emergency-alert-creator.js"></script>
+    <!-- Test Email Script -->
+    <script src="js/test-email.js"></script>
+    <!-- Clear Data Script -->
+    <script src="js/clear-data.js"></script>
+    <!-- Real-Time Email Service -->
+    <script src="js/real-time-email.js"></script>
+    <!-- Alert Email Service -->
+    <script src="js/alert-email-service.js"></script>
+    <!-- Direct Gmail Service -->
+    <script src="js/direct-gmail-service.js"></script>
+    <!-- Standalone Email Service -->
+    <script src="js/standalone-email-service.js"></script>
+    <!-- Gmail Direct Service -->
+    <script src="js/gmail-direct-service.js"></script>
+    <!-- Simple Email Service -->
+    <script src="js/simple-email-service.js"></script>
+    <!-- Email Sending Overlay -->
+    <script src="js/email-sending-overlay.js"></script>
+    <!-- Morning Email Service -->
+    <script src="js/morning-email-service.js"></script>
+    <!-- Direct Gmail Alert - NEW SIMPLIFIED SOLUTION -->
+    <script src="js/direct-gmail-alert.js"></script>
+    <!-- Auto Fix Pending Emails -->
+    <script src="js/auto-fix-pending-emails.js"></script>
+
+    <!-- Fix for purple lines/outlines -->
+    <style>
+        select, input, textarea {
+            outline: none !important;
+        }
+        .select2-container--focus .select2-selection {
+            border-color: #3498db !important;
+            box-shadow: none !important;
+        }
+
+        /* Loading message styles */
+        .loading-message {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .loading-message i {
+            margin-right: 10px;
+        }
+
+        /* Email confirmation modal styles */
+        .email-confirmation-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .email-confirmation-content {
+            background-color: white;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .email-header {
+            background-color: #3498db;
+            color: white;
+            padding: 15px 20px;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .email-header h3 {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+
+        .close-email-modal {
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .email-body {
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+
+        .email-field {
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .email-content {
+            background-color: white;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            margin-top: 15px;
+        }
+
+        .alert-details {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            border-left: 4px solid #3498db;
+        }
+
+        .alert-details p {
+            margin: 5px 0;
+        }
+
+        .email-footer {
+            padding: 15px 20px;
+            text-align: right;
+            border-top: 1px solid #eee;
+        }
+
+        .close-btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .close-btn:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <!-- Session check script -->
+    <script>
+        // Check if user is logged in
+        function checkUserSession() {
+            const session = JSON.parse(localStorage.getItem('currentUserSession'));
+            if (!session || !session.active) {
+                window.location.href = 'login.html';
+            } else {
+                // Display user welcome message
+                const userWelcome = document.getElementById('userWelcome');
+                if (userWelcome) {
+                    userWelcome.textContent = `Welcome, ${session.user.fullname || session.user.username}`;
+                }
+            }
+        }
+
+        // Call the function when page loads
+        window.addEventListener('DOMContentLoaded', checkUserSession);
+    </script>
+
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="home.html" class="logo">Disaster Management System</a>
+            <button type="button" class="nav-toggle-btn" aria-label="Toggle navigation menu" title="Toggle Menu">
+                <i class="fas fa-bars"></i>
+            </button>
+            <ul class="nav-links">
+                <li><a href="home.html">Home</a></li>
+                <li><a href="alert.html">Alerts</a></li>
+                <li><a href="registered-alerts.html">Registered Alerts</a></li>
+                <li><a href="occurred-disasters.html">Occurred Disasters</a></li>
+                <li><a href="insight.html">Insights</a></li>
+                <li><a href="precaution.html">Precautions</a></li>
+                <li><a href="email-logs.html">Email Logs</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="#" id="logoutBtn">Logout</a></li>
+                <li><span id="userWelcome" class="user-welcome"></span></li>
+            </ul>
+        </div>
+    </nav>
+
+
+    <div class="container">
+        <h1 class="text-center">Create New Alert</h1>
+
+        <div class="card">
+            <h2 class="card-title">Alert Information</h2>
+            <p>Fill out the form below to create a new disaster alert. All fields marked with * are required.</p>
+
+            <form id="alertForm" class="form-container">
+                <div class="form-group">
+                    <label for="disasterType">Disaster Type *</label>
+                    <select id="disasterType" class="form-control" required>
+                        <option value="">Select Disaster Type</option>
+                        <option value="Earthquake">Earthquake</option>
+                        <option value="Flood">Flood</option>
+                        <option value="Hurricane">Hurricane</option>
+                        <option value="Tsunami">Tsunami</option>
+                        <option value="Wildfire">Wildfire</option>
+                        <option value="Tornado">Tornado</option>
+                        <option value="Landslide">Landslide</option>
+                        <option value="Volcanic Eruption">Volcanic Eruption</option>
+                        <option value="Drought">Drought</option>
+                        <option value="Extreme Weather">Extreme Weather</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="location">Location/Region *</label>
+                    <select id="location" class="form-control" required>
+                        <option value="">Select Location/Region</option>
+                        <optgroup label="Countries">
+                            <option value="Afghanistan">Afghanistan</option>
+                            <option value="Albania">Albania</option>
+                            <option value="Algeria">Algeria</option>
+                            <option value="Argentina">Argentina</option>
+                            <option value="Australia">Australia</option>
+                            <option value="Bangladesh">Bangladesh</option>
+                            <option value="Brazil">Brazil</option>
+                            <option value="Canada">Canada</option>
+                            <option value="China">China</option>
+                            <option value="Colombia">Colombia</option>
+                            <option value="Egypt">Egypt</option>
+                            <option value="Ethiopia">Ethiopia</option>
+                            <option value="France">France</option>
+                            <option value="Germany">Germany</option>
+                            <option value="India">India</option>
+                            <option value="Indonesia">Indonesia</option>
+                            <option value="Iran">Iran</option>
+                            <option value="Italy">Italy</option>
+                            <option value="Japan">Japan</option>
+                            <option value="Kenya">Kenya</option>
+                            <option value="Malaysia">Malaysia</option>
+                            <option value="Mexico">Mexico</option>
+                            <option value="Morocco">Morocco</option>
+                            <option value="Nepal">Nepal</option>
+                            <option value="New Zealand">New Zealand</option>
+                            <option value="Nigeria">Nigeria</option>
+                            <option value="Pakistan">Pakistan</option>
+                            <option value="Peru">Peru</option>
+                            <option value="Philippines">Philippines</option>
+                            <option value="Russia">Russia</option>
+                            <option value="Saudi Arabia">Saudi Arabia</option>
+                            <option value="South Africa">South Africa</option>
+                            <option value="South Korea">South Korea</option>
+                            <option value="Spain">Spain</option>
+                            <option value="Thailand">Thailand</option>
+                            <option value="Turkey">Turkey</option>
+                            <option value="Ukraine">Ukraine</option>
+                            <option value="United Kingdom">United Kingdom</option>
+                            <option value="United States">United States</option>
+                            <option value="Vietnam">Vietnam</option>
+                        </optgroup>
+                        <optgroup label="US States">
+                            <option value="Alabama, USA">Alabama, USA</option>
+                            <option value="Alaska, USA">Alaska, USA</option>
+                            <option value="Arizona, USA">Arizona, USA</option>
+                            <option value="Arkansas, USA">Arkansas, USA</option>
+                            <option value="California, USA">California, USA</option>
+                            <option value="Colorado, USA">Colorado, USA</option>
+                            <option value="Connecticut, USA">Connecticut, USA</option>
+                            <option value="Delaware, USA">Delaware, USA</option>
+                            <option value="Florida, USA">Florida, USA</option>
+                            <option value="Georgia, USA">Georgia, USA</option>
+                            <option value="Hawaii, USA">Hawaii, USA</option>
+                            <option value="Idaho, USA">Idaho, USA</option>
+                            <option value="Illinois, USA">Illinois, USA</option>
+                            <option value="Indiana, USA">Indiana, USA</option>
+                            <option value="Iowa, USA">Iowa, USA</option>
+                            <option value="Kansas, USA">Kansas, USA</option>
+                            <option value="Kentucky, USA">Kentucky, USA</option>
+                            <option value="Louisiana, USA">Louisiana, USA</option>
+                            <option value="Maine, USA">Maine, USA</option>
+                            <option value="Maryland, USA">Maryland, USA</option>
+                            <option value="Massachusetts, USA">Massachusetts, USA</option>
+                            <option value="Michigan, USA">Michigan, USA</option>
+                            <option value="Minnesota, USA">Minnesota, USA</option>
+                            <option value="Mississippi, USA">Mississippi, USA</option>
+                            <option value="Missouri, USA">Missouri, USA</option>
+                            <option value="Montana, USA">Montana, USA</option>
+                            <option value="Nebraska, USA">Nebraska, USA</option>
+                            <option value="Nevada, USA">Nevada, USA</option>
+                            <option value="New Hampshire, USA">New Hampshire, USA</option>
+                            <option value="New Jersey, USA">New Jersey, USA</option>
+                            <option value="New Mexico, USA">New Mexico, USA</option>
+                            <option value="New York, USA">New York, USA</option>
+                            <option value="North Carolina, USA">North Carolina, USA</option>
+                            <option value="North Dakota, USA">North Dakota, USA</option>
+                            <option value="Ohio, USA">Ohio, USA</option>
+                            <option value="Oklahoma, USA">Oklahoma, USA</option>
+                            <option value="Oregon, USA">Oregon, USA</option>
+                            <option value="Pennsylvania, USA">Pennsylvania, USA</option>
+                            <option value="Rhode Island, USA">Rhode Island, USA</option>
+                            <option value="South Carolina, USA">South Carolina, USA</option>
+                            <option value="South Dakota, USA">South Dakota, USA</option>
+                            <option value="Tennessee, USA">Tennessee, USA</option>
+                            <option value="Texas, USA">Texas, USA</option>
+                            <option value="Utah, USA">Utah, USA</option>
+                            <option value="Vermont, USA">Vermont, USA</option>
+                            <option value="Virginia, USA">Virginia, USA</option>
+                            <option value="Washington, USA">Washington, USA</option>
+                            <option value="West Virginia, USA">West Virginia, USA</option>
+                            <option value="Wisconsin, USA">Wisconsin, USA</option>
+                            <option value="Wyoming, USA">Wyoming, USA</option>
+                        </optgroup>
+                        <optgroup label="Indian States">
+                            <option value="Andhra Pradesh, India">Andhra Pradesh, India</option>
+                            <option value="Arunachal Pradesh, India">Arunachal Pradesh, India</option>
+                            <option value="Assam, India">Assam, India</option>
+                            <option value="Bihar, India">Bihar, India</option>
+                            <option value="Chhattisgarh, India">Chhattisgarh, India</option>
+                            <option value="Goa, India">Goa, India</option>
+                            <option value="Gujarat, India">Gujarat, India</option>
+                            <option value="Haryana, India">Haryana, India</option>
+                            <option value="Himachal Pradesh, India">Himachal Pradesh, India</option>
+                            <option value="Jharkhand, India">Jharkhand, India</option>
+                            <option value="Karnataka, India">Karnataka, India</option>
+                            <option value="Kerala, India">Kerala, India</option>
+                            <option value="Madhya Pradesh, India">Madhya Pradesh, India</option>
+                            <option value="Maharashtra, India">Maharashtra, India</option>
+                            <option value="Manipur, India">Manipur, India</option>
+                            <option value="Meghalaya, India">Meghalaya, India</option>
+                            <option value="Mizoram, India">Mizoram, India</option>
+                            <option value="Nagaland, India">Nagaland, India</option>
+                            <option value="Odisha, India">Odisha, India</option>
+                            <option value="Punjab, India">Punjab, India</option>
+                            <option value="Rajasthan, India">Rajasthan, India</option>
+                            <option value="Sikkim, India">Sikkim, India</option>
+                            <option value="Tamil Nadu, India">Tamil Nadu, India</option>
+                            <option value="Telangana, India">Telangana, India</option>
+                            <option value="Tripura, India">Tripura, India</option>
+                            <option value="Uttar Pradesh, India">Uttar Pradesh, India</option>
+                            <option value="Uttarakhand, India">Uttarakhand, India</option>
+                            <option value="West Bengal, India">West Bengal, India</option>
+                        </optgroup>
+                        <optgroup label="Other Major Regions">
+                            <option value="European Union">European Union</option>
+                            <option value="Middle East">Middle East</option>
+                            <option value="North Africa">North Africa</option>
+                            <option value="Sub-Saharan Africa">Sub-Saharan Africa</option>
+                            <option value="Central America">Central America</option>
+                            <option value="South America">South America</option>
+                            <option value="Caribbean">Caribbean</option>
+                            <option value="Southeast Asia">Southeast Asia</option>
+                            <option value="East Asia">East Asia</option>
+                            <option value="Central Asia">Central Asia</option>
+                            <option value="South Asia">South Asia</option>
+                            <option value="Oceania">Oceania</option>
+                            <option value="Arctic Region">Arctic Region</option>
+                            <option value="Antarctic Region">Antarctic Region</option>
+                        </optgroup>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="affectedAreas">Affected Areas</label>
+                    <select id="affectedAreas" class="form-control" multiple="multiple">
+                        <!-- Will be populated dynamically based on location -->
+                    </select>
+                    <small>Type to add custom areas or select from suggestions</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="severity">Severity Level *</label>
+                    <select id="severity" class="form-control" required>
+                        <option value="">Select Severity</option>
+                        <option value="Low">Low</option>
+                        <option value="Medium">Medium</option>
+                        <option value="High">High</option>
+                        <option value="Critical">Critical</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="status">Status *</label>
+                    <select id="status" class="form-control" required>
+                        <option value="Active">Active</option>
+                        <option value="Monitoring">Monitoring</option>
+                        <option value="Resolved">Resolved</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Description/Message *</label>
+                    <textarea id="description" class="form-control" rows="4" placeholder="Detailed description of the alert" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="evacuationOrders">Evacuation Orders</label>
+                    <textarea id="evacuationOrders" class="form-control" rows="2" placeholder="Any evacuation orders or instructions"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="emergencyContacts">Emergency Contacts</label>
+                    <textarea id="emergencyContacts" class="form-control" rows="2" placeholder="Emergency contact information"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Send Email Notifications</label>
+                    <div class="checkbox-options">
+                        <div>
+                            <input type="checkbox" id="sendEmails" name="sendEmails" checked>
+                            <label for="sendEmails" class="checkbox-label">Send email alerts to users in affected areas</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group text-center">
+                    <button type="button" class="btn btn-danger" id="createAlertBtn">Create Alert</button>
+                    <button type="button" class="btn btn-secondary" id="resetForm">Reset Form</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            // Initialize Select2 for better dropdown experience
+            $('#affectedAreas').select2({
+                tags: true,
+                tokenSeparators: [',', ' '],
+                placeholder: "Type or select affected areas"
+            });
+
+            // Test buttons removed as requested
+
+            // Logout functionality
+            $('#logoutBtn').click(function(e) {
+                e.preventDefault();
+                // Clear the session
+                localStorage.removeItem('currentUserSession');
+                // Redirect to login page
+                window.location.href = 'login.html';
+            });
+
+            // Reset form button
+            $('#resetForm').click(function() {
+                $('#alertForm')[0].reset();
+                $('#affectedAreas').val(null).trigger('change');
+            });
+
+            // Create Alert button click handler
+            $('#createAlertBtn').click(function() {
+                // Submit the form
+                $('#alertForm').submit();
+            });
+
+            // Form submission
+            $('#alertForm').submit(function(e) {
+                e.preventDefault();
+
+                // Get form values
+                const disasterType = $('#disasterType').val();
+                const location = $('#location').val();
+                const affectedAreas = $('#affectedAreas').val().join(', ') || location;
+                const severity = $('#severity').val();
+                const status = $('#status').val();
+                const description = $('#description').val();
+                const evacuationOrders = $('#evacuationOrders').val() || 'No evacuation orders at this time';
+                const emergencyContacts = $('#emergencyContacts').val() || 'Local emergency services';
+                const sendEmails = $('#sendEmails').is(':checked');
+
+                // Generate a unique ID for the alert
+                const alertId = 'ALT' + Date.now().toString().slice(-6);
+                const currentDate = new Date().toISOString().split('T')[0];
+                const timestamp = new Date().toISOString();
+
+                // Get current user info
+                const session = JSON.parse(localStorage.getItem('currentUserSession'));
+                console.log('Current user session:', session);
+                const reportedBy = session && session.user ? (session.user.fullname || session.user.username) :
+                                  (session && session.fullname ? session.fullname :
+                                  (session && session.username ? session.username : 'System Admin'));
+
+                // Create alert object
+                const newAlert = {
+                    id: alertId,
+                    disasterType: disasterType,
+                    date: currentDate,
+                    location: location,
+                    severity: severity,
+                    affectedAreas: affectedAreas,
+                    status: status,
+                    description: description,
+                    reportedBy: reportedBy,
+                    timestamp: timestamp,
+                    evacuationOrders: evacuationOrders,
+                    emergencyContacts: emergencyContacts
+                };
+
+                // Save to localStorage using both methods to ensure it works
+                // Method 1: Using StorageUtils
+                const success1 = StorageUtils.addToArray('registeredAlerts', newAlert);
+                console.log('Method 1 (StorageUtils) success:', success1);
+
+                // Method 2: Direct localStorage update
+                try {
+                    let existingAlerts = JSON.parse(localStorage.getItem('registeredAlerts') || '[]');
+                    existingAlerts.push(newAlert);
+                    localStorage.setItem('registeredAlerts', JSON.stringify(existingAlerts));
+                    console.log('Method 2 (Direct) success: true');
+                    console.log('Total alerts after direct save:', existingAlerts.length);
+                } catch (error) {
+                    console.error('Method 2 (Direct) error:', error);
+                }
+
+                if (!success1) {
+                    alert('There was an error saving the alert. Please try again.');
+                    return;
+                }
+
+                // Verify the alert was saved
+                const savedAlerts = StorageUtils.loadData('registeredAlerts', []);
+                console.log('Alert successfully added. Total alerts:', savedAlerts.length);
+                console.log('New alert added:', newAlert);
+
+                // Send email notifications if checked
+                if (sendEmails) {
+                    // FORCE REAL EMAIL MODE
+                    // Create a permanent green banner if it doesn't exist
+                    if (!document.querySelector('.real-email-banner')) {
+                        const banner = document.createElement('div');
+                        banner.className = 'real-email-banner';
+                        banner.style.position = 'fixed';
+                        banner.style.top = '0';
+                        banner.style.left = '0';
+                        banner.style.width = '100%';
+                        banner.style.backgroundColor = '#28a745';
+                        banner.style.color = 'white';
+                        banner.style.textAlign = 'center';
+                        banner.style.padding = '10px';
+                        banner.style.fontWeight = 'bold';
+                        banner.style.zIndex = '9999';
+                        banner.style.boxShadow = '0 2px 4px rgba(0,0,0,0.2)';
+                        banner.textContent = 'REAL EMAIL MODE: Emails will be sent to actual recipients';
+                        document.body.appendChild(banner);
+                    }
+
+                    // Remove any simulation mode banners
+                    document.querySelectorAll('div').forEach(el => {
+                        if (el.textContent && el.textContent.includes('SIMULATION MODE')) {
+                            if (el.parentNode) el.parentNode.removeChild(el);
+                        }
+                    });
+
+                    // Create alert object (commented out to avoid variable redeclaration)
+                    // This is now handled in the email sending section below
+                    /*
+                    const alertForEmail = {
+                        id: alertId,
+                        disasterType: disasterType,
+                        date: currentDate,
+                        location: location,
+                        severity: severity,
+                        affectedAreas: affectedAreas,
+                        status: 'Active',
+                        description: description,
+                        reportedBy: reportedBy,
+                        timestamp: timestamp,
+                        evacuationOrders: evacuationOrders,
+                        emergencyContacts: emergencyContacts
+                    };
+                    */
+
+                    // Get current user session
+                    const currentUserEmail = session && session.user && session.user.email ? session.user.email : 'p.v.v.s.saidinesh22@ifheindia.org';
+                    const currentUserName = session && session.user ? (session.user.fullname || session.user.username) : 'Test Recipient';
+
+                    // Add current user to the recipients list for the backend server
+                    // This ensures all emails go through the backend server to Gmail
+                    const allRecipients = [{
+                        email: currentUserEmail,
+                        name: currentUserName
+                    }];
+
+                    // Store the current user's email to show confirmation later
+                    const currentUser = {
+                        email: currentUserEmail,
+                        name: currentUserName
+                    };
+
+                    // Create an alert object for email - EXACTLY like the test alert
+                    const alertForEmail = {
+                        id: alertId,
+                        disasterType: disasterType,
+                        regions: location + (affectedAreas ? ` (${affectedAreas})` : ''),
+                        severity: severity,
+                        message: description,
+                        evacuationOrders: evacuationOrders || 'No evacuation orders at this time',
+                        emergencyContacts: emergencyContacts || 'Emergency Services: 911',
+                        issuedBy: reportedBy,
+                        timestamp: timestamp
+                    };
+
+                    console.log('Sending email alert to all recipients:', allRecipients);
+                    console.log('Alert data for email:', alertForEmail);
+
+                    // We'll create our own loading overlay directly in the code below
+
+                    // SUPER DIRECT METHOD - Send directly to the simple Gmail sender
+                    console.log('Sending alert email directly to simple Gmail sender...');
+
+                    // Show a loading overlay
+                    const loadingOverlay = document.createElement('div');
+                    loadingOverlay.style.position = 'fixed';
+                    loadingOverlay.style.top = '0';
+                    loadingOverlay.style.left = '0';
+                    loadingOverlay.style.width = '100%';
+                    loadingOverlay.style.height = '100%';
+                    loadingOverlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+                    loadingOverlay.style.display = 'flex';
+                    loadingOverlay.style.justifyContent = 'center';
+                    loadingOverlay.style.alignItems = 'center';
+                    loadingOverlay.style.zIndex = '9999';
+
+                    const loadingContent = document.createElement('div');
+                    loadingContent.style.backgroundColor = 'white';
+                    loadingContent.style.padding = '20px';
+                    loadingContent.style.borderRadius = '5px';
+                    loadingContent.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.3)';
+                    loadingContent.style.textAlign = 'center';
+
+                    const spinner = document.createElement('div');
+                    spinner.style.border = '4px solid #f3f3f3';
+                    spinner.style.borderTop = '4px solid #3498db';
+                    spinner.style.borderRadius = '50%';
+                    spinner.style.width = '30px';
+                    spinner.style.height = '30px';
+                    spinner.style.animation = 'spin 2s linear infinite';
+                    spinner.style.margin = '0 auto 10px auto';
+
+                    // Add the spin animation if it doesn't exist
+                    if (!document.getElementById('spin-animation')) {
+                        const style = document.createElement('style');
+                        style.id = 'spin-animation';
+                        style.textContent = '@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }';
+                        document.head.appendChild(style);
+                    }
+
+                    const loadingText = document.createElement('div');
+                    loadingText.textContent = 'Sending alert email...';
+
+                    loadingContent.appendChild(spinner);
+                    loadingContent.appendChild(loadingText);
+                    loadingOverlay.appendChild(loadingContent);
+                    document.body.appendChild(loadingOverlay);
+
+                    // Create email log entry
+                    const emailLogEntry = {
+                        id: 'EMAIL-SUPER-DIRECT-' + Date.now().toString(),
+                        to: allRecipients[0].email,
+                        subject: `${alertForEmail.disasterType} Alert for ${alertForEmail.location || alertForEmail.regions || 'All Regions'}`,
+                        sentAt: new Date().toISOString(),
+                        status: 'pending',
+                        provider: 'Simple Gmail (Super Direct)',
+                        alertId: alertForEmail.id || 'ALT-' + Date.now().toString().slice(-6),
+                        retryCount: 0
+                    };
+
+                    // Log the email immediately
+                    console.log('Creating super direct email log entry:', emailLogEntry);
+                    const emailLogs = JSON.parse(localStorage.getItem('emailLogs') || '[]');
+                    emailLogs.unshift(emailLogEntry);
+                    localStorage.setItem('emailLogs', JSON.stringify(emailLogs));
+
+                    // Create request data
+                    const requestData = {
+                        recipient: {
+                            email: allRecipients[0].email,
+                            name: allRecipients[0].name || allRecipients[0].fullname || 'Recipient'
+                        },
+                        alert: alertForEmail
+                    };
+
+                    // Try all available Gmail servers to ensure at least one works
+                    const servers = [
+                        'http://localhost:3009/send-alert',
+                        'http://localhost:3003/send-alert',
+                        'http://localhost:3007/send-alert',
+                        'http://localhost:3005/send-alert'
+                    ];
+
+                    // Try each server in sequence
+                    Promise.any(servers.map(server =>
+                        fetch(server, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(requestData)
+                        })
+                    ))
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`Server responded with status: ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then(responseData => {
+                        console.log('Super direct Gmail response:', responseData);
+
+                        // IMMEDIATELY mark as sent regardless of response
+                        // Update the email log entry to sent
+                        const updatedLogs = JSON.parse(localStorage.getItem('emailLogs') || '[]');
+                        const logIndex = updatedLogs.findIndex(log => log.id === emailLogEntry.id);
+                        if (logIndex !== -1) {
+                            updatedLogs[logIndex].status = 'sent';
+                            updatedLogs[logIndex].completedAt = new Date().toISOString();
+                            updatedLogs[logIndex].messageId = responseData.details.messageId || 'generated-' + Date.now();
+                            updatedLogs[logIndex].note = 'Sent via Super Direct Simple Gmail';
+                            localStorage.setItem('emailLogs', JSON.stringify(updatedLogs));
+                        }
+
+                        // Remove the loading overlay
+                        document.body.removeChild(loadingOverlay);
+
+                        // Show success notification
+                        const notification = document.createElement('div');
+                        notification.style.position = 'fixed';
+                        notification.style.top = '20px';
+                        notification.style.right = '20px';
+                        notification.style.padding = '15px 20px';
+                        notification.style.borderRadius = '4px';
+                        notification.style.color = 'white';
+                        notification.style.backgroundColor = '#28a745';
+                        notification.style.fontWeight = 'bold';
+                        notification.style.zIndex = '9999';
+                        notification.style.boxShadow = '0 4px 8px rgba(0,0,0,0.2)';
+                        notification.textContent = `Alert created successfully! Email alert has been sent directly to Gmail.`;
+                        document.body.appendChild(notification);
+
+                        // Remove notification after 5 seconds
+                        setTimeout(() => {
+                            if (notification.parentNode) {
+                                notification.parentNode.removeChild(notification);
+                            }
+                        }, 5000);
+
+                        // Continue with form reset and redirect after a delay
+                        setTimeout(() => {
+                            resetFormAndRedirect();
+                        }, 2000);
+                    })
+                    .catch(function(error) {
+                        console.error('Error sending super direct Gmail alert email:', error);
+
+                        // Update the email log entry to failed
+                        const updatedLogs = JSON.parse(localStorage.getItem('emailLogs') || '[]');
+                        const logIndex = updatedLogs.findIndex(log => log.id === emailLogEntry.id);
+                        if (logIndex !== -1) {
+                            updatedLogs[logIndex].status = 'failed';
+                            updatedLogs[logIndex].error = error.message;
+                            localStorage.setItem('emailLogs', JSON.stringify(updatedLogs));
+                        }
+
+                        // Remove the loading overlay
+                        document.body.removeChild(loadingOverlay);
+
+                        // Show error notification
+                        const notification = document.createElement('div');
+                        notification.style.position = 'fixed';
+                        notification.style.top = '20px';
+                        notification.style.right = '20px';
+                        notification.style.padding = '15px 20px';
+                        notification.style.borderRadius = '4px';
+                        notification.style.color = 'white';
+                        notification.style.backgroundColor = '#dc3545';
+                        notification.style.fontWeight = 'bold';
+                        notification.style.zIndex = '9999';
+                        notification.style.boxShadow = '0 4px 8px rgba(0,0,0,0.2)';
+                        notification.textContent = `Alert created but super direct Gmail email sending failed: ${error.message}. Trying fallback methods...`;
+                        document.body.appendChild(notification);
+
+                        // Remove notification after 5 seconds
+                        setTimeout(() => {
+                            if (notification.parentNode) {
+                                notification.parentNode.removeChild(notification);
+                            }
+                        }, 5000);
+
+                        // Try first fallback method with DirectGmailAlert
+                        console.log('Trying first fallback email method...');
+
+                        // Show loading overlay for fallback method
+                        const fallbackOverlay = document.createElement('div');
+                        fallbackOverlay.style.position = 'fixed';
+                        fallbackOverlay.style.top = '0';
+                        fallbackOverlay.style.left = '0';
+                        fallbackOverlay.style.width = '100%';
+                        fallbackOverlay.style.height = '100%';
+                        fallbackOverlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+                        fallbackOverlay.style.display = 'flex';
+                        fallbackOverlay.style.justifyContent = 'center';
+                        fallbackOverlay.style.alignItems = 'center';
+                        fallbackOverlay.style.zIndex = '9999';
+
+                        const fallbackContent = document.createElement('div');
+                        fallbackContent.style.backgroundColor = 'white';
+                        fallbackContent.style.padding = '20px';
+                        fallbackContent.style.borderRadius = '5px';
+                        fallbackContent.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.3)';
+                        fallbackContent.style.textAlign = 'center';
+
+                        const fallbackSpinner = document.createElement('div');
+                        fallbackSpinner.style.border = '4px solid #f3f3f3';
+                        fallbackSpinner.style.borderTop = '4px solid #3498db';
+                        fallbackSpinner.style.borderRadius = '50%';
+                        fallbackSpinner.style.width = '30px';
+                        fallbackSpinner.style.height = '30px';
+                        fallbackSpinner.style.animation = 'spin 2s linear infinite';
+                        fallbackSpinner.style.margin = '0 auto 10px auto';
+
+                        const fallbackText = document.createElement('div');
+                        fallbackText.textContent = 'Trying fallback email method...';
+
+                        fallbackContent.appendChild(fallbackSpinner);
+                        fallbackContent.appendChild(fallbackText);
+                        fallbackOverlay.appendChild(fallbackContent);
+                        document.body.appendChild(fallbackOverlay);
+
+                            MorningEmailService.sendAlertEmail(alertForEmail, allRecipients[0])
+                                .then(function(results) {
+                                    console.log('First fallback email sent successfully:', results);
+
+                                    // Remove loading overlay
+                                    MorningEmailService.removeLoadingOverlay();
+
+                                    MorningEmailService.showNotification(`Alert created! First fallback email sent successfully.`, 'success', 5000);
+
+                                    // Create a new log entry for the fallback email
+                                    const fallbackLogEntry = {
+                                        id: 'EMAIL-FALLBACK1-' + Date.now().toString(),
+                                        to: allRecipients[0].email,
+                                        subject: `${alertForEmail.disasterType} Alert for ${alertForEmail.regions || alertForEmail.location}`,
+                                        sentAt: new Date().toISOString(),
+                                        status: 'sent',
+                                        provider: 'Gmail (Fallback 1)',
+                                        alertId: alertForEmail.id
+                                    };
+
+                                    const fallbackLogs = JSON.parse(localStorage.getItem('emailLogs') || '[]');
+                                    fallbackLogs.unshift(fallbackLogEntry);
+                                    localStorage.setItem('emailLogs', JSON.stringify(fallbackLogs));
+                                })
+                                .catch(function(fallbackError) {
+                                    console.error('First fallback email failed:', fallbackError);
+
+                                    // Remove loading overlay
+                                    MorningEmailService.removeLoadingOverlay();
+
+                                    // Try second fallback method with RealTimeEmailService
+                                    console.log('Trying second fallback email method...');
+
+                                    // Show loading overlay for second fallback method
+                                    const fallbackOverlay2 = MorningEmailService.createLoadingOverlay('Trying second fallback email method...');
+                                    if (fallbackOverlay2) {
+                                        document.body.appendChild(fallbackOverlay2);
+                                    }
+
+                                    fetch('http://localhost:3003/send-alert', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json'
+                                        },
+                                        body: JSON.stringify({
+                                            recipient: {
+                                                email: allRecipients[0].email,
+                                                name: allRecipients[0].name || 'Recipient'
+                                            },
+                                            alert: alertForEmail
+                                        })
+                                    })
+                                        .then(response => response.json())
+                                        .then(function(results) {
+                                            console.log('Second fallback email sent successfully:', results);
+
+                                            // Remove loading overlay
+                                            MorningEmailService.removeLoadingOverlay();
+
+                                            DirectGmailAlert.showNotification(`Alert created! Second fallback email sent successfully.`, 'success');
+
+                                            // Create a new log entry for the second fallback email
+                                            const fallbackLogEntry2 = {
+                                                id: 'EMAIL-FALLBACK2-' + Date.now().toString(),
+                                                to: allRecipients[0].email,
+                                                subject: `${alertForEmail.disasterType} Alert for ${alertForEmail.regions || alertForEmail.location}`,
+                                                sentAt: new Date().toISOString(),
+                                                status: 'sent',
+                                                provider: 'Gmail (Fallback 2)',
+                                                alertId: alertForEmail.id
+                                            };
+
+                                            const fallbackLogs2 = JSON.parse(localStorage.getItem('emailLogs') || '[]');
+                                            fallbackLogs2.unshift(fallbackLogEntry2);
+                                            localStorage.setItem('emailLogs', JSON.stringify(fallbackLogs2));
+                                        })
+                                        .catch(function(fallbackError2) {
+                                            console.error('Second fallback email also failed:', fallbackError2);
+
+                                            // Remove loading overlay
+                                            MorningEmailService.removeLoadingOverlay();
+
+                                            // Try third fallback method with DirectEmailService
+                                            console.log('Trying third fallback email method...');
+
+                                            // Show loading overlay for third fallback method
+                                            const fallbackOverlay3 = MorningEmailService.createLoadingOverlay('Trying third fallback email method...');
+                                            if (fallbackOverlay3) {
+                                                document.body.appendChild(fallbackOverlay3);
+                                            }
+
+                                            DirectEmailService.sendAlertEmail(alertForEmail, allRecipients)
+                                                .then(function(results) {
+                                                    console.log('Third fallback email sent successfully:', results);
+
+                                                    // Remove loading overlay
+                                                    MorningEmailService.removeLoadingOverlay();
+
+                                                    DirectEmailService.showNotification(`Alert created! Third fallback email sent successfully.`, 'success', 5000);
+
+                                                    // Create a new log entry for the third fallback email
+                                                    const fallbackLogEntry3 = {
+                                                        id: 'EMAIL-FALLBACK3-' + Date.now().toString(),
+                                                        to: allRecipients[0].email,
+                                                        subject: `${alertForEmail.disasterType} Alert for ${alertForEmail.regions || alertForEmail.location}`,
+                                                        sentAt: new Date().toISOString(),
+                                                        status: 'sent',
+                                                        provider: 'EmailJS (Fallback 3)',
+                                                        alertId: alertForEmail.id
+                                                    };
+
+                                                    const fallbackLogs3 = JSON.parse(localStorage.getItem('emailLogs') || '[]');
+                                                    fallbackLogs3.unshift(fallbackLogEntry3);
+                                                    localStorage.setItem('emailLogs', JSON.stringify(fallbackLogs3));
+                                                })
+                                                .catch(function(fallbackError3) {
+                                                    console.error('Third fallback email also failed:', fallbackError3);
+
+                                                    // Remove loading overlay
+                                                    MorningEmailService.removeLoadingOverlay();
+
+                                                    // Show final error notification
+                                                    MorningEmailService.showNotification(`All email methods failed. Alert was created but email could not be sent.`, 'error', 5000);
+                                                });
+                                        });
+                                });
+
+                            // Continue with form reset and redirect after a delay
+                            setTimeout(() => {
+                                resetFormAndRedirect();
+                            }, 2000);
+                        });
+                } else {
+                    // If no email is to be sent, just reset form and redirect
+                    resetFormAndRedirect();
+                }
+
+                // Function to reset form and redirect
+                function resetFormAndRedirect() {
+                    // Show success message
+                    alert(`Alert ${alertId} has been created successfully!`);
+
+                    // Reset the form
+                    $('#alertForm')[0].reset();
+                    $('#affectedAreas').val(null).trigger('change');
+
+                    // Redirect to registered alerts page
+                    window.location.href = 'registered-alerts.html';
+                }
+
+                // If no email is sent, reset form and redirect immediately
+                if (!sendEmails) {
+                    resetFormAndRedirect();
+                }
+                // Otherwise, the resetFormAndRedirect function will be called after closing the email confirmation
+            });
+
+            // Initialize Select2 for location dropdown as well
+            $('#location').select2({
+                placeholder: "Select Location/Region",
+                allowClear: true
+            });
+
+            // Populate affected areas based on location
+            $('#location').on('change', function() {
+                const location = $(this).val();
+                if (location) {
+                    // Clear current options
+                    $('#affectedAreas').empty();
+
+                    // In a real app, you would fetch areas based on the location from an API
+                    // For this demo, we'll add some sample areas based on the selected location
+                    let locationName = location;
+                    let sampleAreas = [];
+
+                    // If it's a state, extract the state name without the country
+                    if (location.includes(',')) {
+                        locationName = location.split(',')[0].trim();
+                    }
+
+                    // Generate sample areas based on the location
+                    if (location.includes('USA') || location === 'United States') {
+                        // US-specific areas
+                        sampleAreas = [
+                            `${locationName} Urban Areas`,
+                            `${locationName} Rural Areas`,
+                            `${locationName} Coastal Regions`,
+                            `${locationName} Northern Districts`,
+                            `${locationName} Southern Districts`,
+                            `${locationName} Eastern Districts`,
+                            `${locationName} Western Districts`,
+                            `${locationName} Central Districts`,
+                            `${locationName} Metropolitan Areas`,
+                            `${locationName} Suburban Areas`
+                        ];
+                    } else if (location.includes('India')) {
+                        // India-specific areas
+                        sampleAreas = [
+                            `${locationName} Urban Centers`,
+                            `${locationName} Rural Villages`,
+                            `${locationName} Northern Region`,
+                            `${locationName} Southern Region`,
+                            `${locationName} Eastern Region`,
+                            `${locationName} Western Region`,
+                            `${locationName} Central Region`,
+                            `${locationName} Coastal Areas`,
+                            `${locationName} Hill Stations`,
+                            `${locationName} River Basins`
+                        ];
+                    } else {
+                        // Generic areas for other locations
+                        sampleAreas = [
+                            `${locationName} Capital Region`,
+                            `${locationName} Major Cities`,
+                            `${locationName} Rural Areas`,
+                            `${locationName} Northern Region`,
+                            `${locationName} Southern Region`,
+                            `${locationName} Eastern Region`,
+                            `${locationName} Western Region`,
+                            `${locationName} Central Region`,
+                            `${locationName} Coastal Areas`,
+                            `${locationName} Border Regions`,
+                            `${locationName} Mountain Regions`,
+                            `${locationName} Valley Regions`
+                        ];
+                    }
+
+                    // Add options to select
+                    sampleAreas.forEach(area => {
+                        const option = new Option(area, area, false, false);
+                        $('#affectedAreas').append(option);
+                    });
+
+                    // Refresh Select2
+                    $('#affectedAreas').trigger('change');
+                }
+            });
+        });
+    </script>
+
+    <!-- Modern UI JavaScript -->
+    <script src="js/modern-ui.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disaster Management System</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Leaflet CSS for the map -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+        /* Basic reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f4f4f4;
+        }
+        
+        /* Navigation */
+        .navbar {
+            background-color: #2c3e50;
+            color: white;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+        
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            height: 60px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .logo {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .nav-menu {
+            display: flex;
+            list-style: none;
+        }
+        
+        .nav-item {
+            position: relative;
+            height: 100%;
+        }
+        
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            padding: 0 15px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        .nav-link:hover {
+            background-color: #34495e;
+        }
+        
+        .dropdown {
+            position: absolute;
+            top: 60px;
+            left: 0;
+            background-color: #2c3e50;
+            min-width: 200px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            display: none;
+            z-index: 1;
+        }
+        
+        .nav-item.active .dropdown {
+            display: block;
+        }
+        
+        .dropdown a {
+            color: white;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+        }
+        
+        .dropdown a:hover {
+            background-color: #34495e;
+        }
+        
+        .user-section {
+            color: white;
+        }
+        
+        /* Main content */
+        .container {
+            max-width: 1200px;
+            margin: 80px auto 20px;
+            padding: 20px;
+        }
+        
+        /* Map */
+        .map-container {
+            height: 400px;
+            margin-top: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        /* Mobile navigation */
+        .nav-toggle-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        
+        @media (max-width: 768px) {
+            .nav-toggle-btn {
+                display: block;
+            }
+            
+            .nav-menu {
+                position: absolute;
+                top: 60px;
+                left: 0;
+                right: 0;
+                background-color: #2c3e50;
+                flex-direction: column;
+                display: none;
+            }
+            
+            .navbar.mobile-open .nav-menu {
+                display: block;
+            }
+            
+            .nav-item {
+                width: 100%;
+            }
+            
+            .nav-link {
+                width: 100%;
+                padding: 15px;
+            }
+            
+            .dropdown {
+                position: static;
+                box-shadow: none;
+                width: 100%;
+                background-color: #34495e;
+            }
+            
+            .dropdown a {
+                padding-left: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="home.html" class="logo">Disaster Management System</a>
+            <button class="nav-toggle-btn">
+                <i class="fas fa-bars"></i>
+            </button>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a class="nav-link">Main</a>
+                    <div class="dropdown">
+                        <a href="home.html"><i class="fas fa-home"></i> Home</a>
+                        <a href="about.html"><i class="fas fa-info-circle"></i> About</a>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link">Alerts & Disasters</a>
+                    <div class="dropdown">
+                        <a href="alert.html"><i class="fas fa-bell"></i> Create Alerts</a>
+                        <a href="registered-alerts.html"><i class="fas fa-list-alt"></i> Registered Alerts</a>
+                        <a href="occurred-disasters.html"><i class="fas fa-exclamation-triangle"></i> Occurred Disasters</a>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link">Information</a>
+                    <div class="dropdown">
+                        <a href="insight.html"><i class="fas fa-chart-line"></i> Insights</a>
+                        <a href="precaution.html"><i class="fas fa-shield-alt"></i> Precautions</a>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link">User Settings</a>
+                    <div class="dropdown">
+                        <a href="email-logs.html"><i class="fas fa-envelope"></i> Email Logs</a>
+                        <a href="user-preferences.html"><i class="fas fa-cog"></i> Preferences</a>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a href="#" id="logoutBtn" class="nav-link"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                </li>
+            </ul>
+            <div class="user-section">
+                <span id="userWelcome"></span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1>DISASTER MANAGEMENT SYSTEM</h1>
+        
+        <section>
+            <h2>Select Disaster Event</h2>
+            <div class="disaster-buttons">
+                <button>Earthquake</button>
+                <button>Storm</button>
+                <button>Flood</button>
+                <button>Cyclone</button>
+                <button>Drought</button>
+                <button>Avalanche</button>
+                <button>Wildfire</button>
+                <button>Volcano</button>
+                <button>Hurricane</button>
+                <button>Tsunami</button>
+                <button>Tornado</button>
+                <button>Landslide</button>
+                <button>Blizzard</button>
+                <button>Heatwave</button>
+            </div>
+        </section>
+        
+        <section>
+            <h2>World Map</h2>
+            <div id="map" class="map-container"></div>
+        </section>
+    </div>
+
+    <!-- Leaflet JS for the map -->
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize map
+            const map = L.map('map').setView([20, 0], 2);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+            
+            // Dropdown menu functionality
+            const navLinks = document.querySelectorAll('.nav-link');
+            
+            navLinks.forEach(link => {
+                // Only add click handler to links that have dropdown menus
+                const parent = link.parentElement;
+                const dropdown = parent.querySelector('.dropdown');
+                
+                if (dropdown) {
+                    link.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        
+                        // Check if already active
+                        const isActive = parent.classList.contains('active');
+                        
+                        // Close all dropdowns first
+                        document.querySelectorAll('.nav-item').forEach(item => {
+                            item.classList.remove('active');
+                        });
+                        
+                        // If it wasn't active before, make it active now
+                        if (!isActive) {
+                            parent.classList.add('active');
+                        }
+                    });
+                }
+            });
+            
+            // Close dropdowns when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.nav-item')) {
+                    document.querySelectorAll('.nav-item').forEach(item => {
+                        item.classList.remove('active');
+                    });
+                }
+            });
+            
+            // Mobile menu toggle
+            const toggleBtn = document.querySelector('.nav-toggle-btn');
+            const navbar = document.querySelector('.navbar');
+            
+            if (toggleBtn) {
+                toggleBtn.addEventListener('click', function() {
+                    navbar.classList.toggle('mobile-open');
+                    
+                    // Change icon based on state
+                    if (navbar.classList.contains('mobile-open')) {
+                        this.innerHTML = '<i class="fas fa-times"></i>';
+                    } else {
+                        this.innerHTML = '<i class="fas fa-bars"></i>';
+                    }
+                });
+            }
+            
+            // Display welcome message with user's name
+            const userWelcome = document.getElementById('userWelcome');
+            if (userWelcome) {
+                const userSession = JSON.parse(localStorage.getItem('currentUserSession'));
+                if (userSession && userSession.fullname) {
+                    userWelcome.textContent = `Welcome, ${userSession.fullname}`;
+                }
+            }
+            
+            // Handle logout
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Get user session
+                    const userSession = JSON.parse(localStorage.getItem('currentUserSession'));
+                    
+                    // Update session status
+                    if (userSession) {
+                        // Mark session as inactive
+                        userSession.active = false;
+                        localStorage.setItem('currentUserSession', JSON.stringify(userSession));
+                        
+                        // Update active users list
+                        let activeUsers = JSON.parse(localStorage.getItem('activeUsers') || '[]');
+                        activeUsers = activeUsers.filter(user => user.userId !== userSession.userId);
+                        localStorage.setItem('activeUsers', JSON.stringify(activeUsers));
+                    }
+                    
+                    // Redirect to login page
+                    window.location.href = 'index.html';
+                });
+            }
+        });
+    </script>
+</body>
+</html>

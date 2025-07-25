@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Insights - Disaster Management System</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/modern-theme.css">
+    <link rel="stylesheet" href="css/table-text-fix.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Chart.js for data visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- jsPDF for report generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- DataTables CSS and JS for better table functionality -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <!-- Storage utilities -->
+    <script src="js/storage-utils.js"></script>
+
+    <!-- Fix for purple lines/outlines -->
+    <style>
+        select, input, textarea {
+            outline: none !important;
+        }
+
+        /* Additional styles for insights page */
+        .chart-container {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .country-chart-container {
+            height: 400px;
+        }
+
+        .timeline-chart-container, .impact-chart-container {
+            height: 300px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .insight-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #3498db;
+            margin: 10px 0;
+        }
+
+        .download-btn {
+            display: inline-block;
+            background-color: #3498db;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            margin-top: 10px;
+            transition: background-color 0.3s;
+        }
+
+        .download-btn:hover {
+            background-color: #2980b9;
+        }
+
+        .no-data-message {
+            text-align: center;
+            padding: 20px;
+            color: #7f8c8d;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <!-- Session check script -->
+    <script>
+        // Check if user is logged in
+        function checkUserSession() {
+            const session = JSON.parse(localStorage.getItem('currentUserSession'));
+            if (!session || !session.active) {
+                window.location.href = 'login.html';
+            } else {
+                // Display user welcome message
+                const userWelcome = document.getElementById('userWelcome');
+                if (userWelcome) {
+                    userWelcome.textContent = `Welcome, ${session.user.fullname || session.user.username}`;
+                }
+            }
+        }
+
+        // Call the function when page loads
+        window.addEventListener('DOMContentLoaded', checkUserSession);
+    </script>
+
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="home.html" class="logo">Disaster Management System</a>
+            <button type="button" class="nav-toggle-btn" aria-label="Toggle navigation menu" title="Toggle Menu">
+                <i class="fas fa-bars"></i>
+            </button>
+            <ul class="nav-links">
+                <li><a href="home.html">Home</a></li>
+                <li><a href="alert.html">Alerts</a></li>
+                <li><a href="registered-alerts.html">Registered Alerts</a></li>
+                <li><a href="occurred-disasters.html">Occurred Disasters</a></li>
+                <li><a href="insight.html">Insights</a></li>
+                <li><a href="precaution.html">Precautions</a></li>
+                <li><a href="email-logs.html">Email Logs</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="#" id="logoutBtn">Logout</a></li>
+                <li><span id="userWelcome" class="user-welcome"></span></li>
+            </ul>
+        </div>
+    </nav>
+
+
+    <div class="container">
+        <h1 class="text-center">Real-World Disaster Insights</h1>
+
+        <div class="card">
+            <h2 class="card-title">Historical Disaster Event Analysis</h2>
+            <p>Select a disaster type to view insights about real-world disasters that have occurred globally. This page only shows historical disaster data, not user-created alerts.</p>
+
+            <div class="form-group">
+                <label for="insightDisasterType">Select Disaster Event:</label>
+                <select id="insightDisasterType" class="form-control">
+                    <option value="">-- Select Disaster Type --</option>
+                    <option value="Earthquake">Earthquake</option>
+                    <option value="Storm">Storm</option>
+                    <option value="Flood">Flood</option>
+                    <option value="Cyclone">Cyclone</option>
+                    <option value="Drought">Drought</option>
+                    <option value="Avalanche">Avalanche</option>
+                    <option value="Wildfire">Wildfire</option>
+                    <option value="Volcano">Volcano</option>
+                    <option value="Hurricane">Hurricane</option>
+                    <option value="Tsunami">Tsunami</option>
+                    <option value="Tornado">Tornado</option>
+                    <option value="Landslide">Landslide</option>
+                    <option value="Blizzard">Blizzard</option>
+                    <option value="Heatwave">Heatwave</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="card mt-20 hidden" id="statsContainer">
+            <h2 class="card-title">Key Statistics</h2>
+            <div class="insight-stats">
+                <div class="stat-card">
+                    <h3>Total Events</h3>
+                    <div id="totalEvents" class="stat-number">0</div>
+                    <p>Recorded incidents</p>
+                </div>
+
+                <div class="stat-card">
+                    <h3>Total Deaths</h3>
+                    <div id="totalDeaths" class="stat-number">0</div>
+                    <p>Lives lost</p>
+                </div>
+
+                <div class="stat-card">
+                    <h3>Total Injured</h3>
+                    <div id="totalInjured" class="stat-number">0</div>
+                    <p>People affected</p>
+                </div>
+
+                <div class="stat-card">
+                    <h3>Most Affected</h3>
+                    <div id="mostAffected" class="stat-number">-</div>
+                    <p>Country/Region</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mt-20 hidden" id="chartContainer">
+            <h2 class="card-title">Distribution by Country</h2>
+            <div class="chart-container country-chart-container">
+                <canvas id="countryChart"></canvas>
+            </div>
+        </div>
+
+        <div class="card mt-20 hidden" id="timelineContainer">
+            <h2 class="card-title">Disaster Timeline (Last 5 Years)</h2>
+            <div class="chart-container timeline-chart-container">
+                <canvas id="timelineChart"></canvas>
+            </div>
+        </div>
+
+        <div class="card mt-20 hidden" id="impactContainer">
+            <h2 class="card-title">Impact Analysis</h2>
+            <div class="chart-container impact-chart-container">
+                <canvas id="impactChart"></canvas>
+            </div>
+        </div>
+
+
+
+        <div class="card mt-20 hidden" id="downloadContainer">
+            <h2 class="card-title">Download Data</h2>
+            <p>Download detailed information about the selected disaster type.</p>
+            <a href="#" class="download-btn" id="downloadBtn">
+                <i class="fas fa-download"></i> Download Report
+            </a>
+        </div>
+    </div>
+
+    <!-- Include disaster data script -->
+    <script src="js/disaster-data.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            // Initialize chart objects
+            let countryChart = null;
+            let timelineChart = null;
+            let impactChart = null;
+
+            // Logout functionality
+            $('#logoutBtn').click(function(e) {
+                e.preventDefault();
+                localStorage.removeItem('currentUserSession');
+                window.location.href = 'login.html';
+            });
+
+            // Function to get registered alerts from localStorage
+            function getRegisteredAlerts() {
+                return StorageUtils.loadData('registeredAlerts', []);
+            }
+
+            // Function to convert registered alerts to the format used by historical disasters
+            function convertRegisteredAlertToDisaster(alert) {
+                // Extract country and region from location
+                let country = alert.location;
+                let region = '';
+
+                if (alert.location && alert.location.includes(',')) {
+                    const parts = alert.location.split(',');
+                    region = parts[0].trim();
+                    country = parts[parts.length - 1].trim();
+                }
+
+                // Convert severity to proper case if needed
+                let severity = alert.severity;
+                if (severity) {
+                    severity = severity.charAt(0).toUpperCase() + severity.slice(1).toLowerCase();
+                }
+
+                // Create a disaster object from the alert
+                return {
+                    id: alert.id,
+                    type: alert.disasterType,
+                    title: `${alert.disasterType} in ${alert.location}`,
+                    location: {
+                        country: country,
+                        region: region || alert.affectedAreas || 'Unknown',
+                        coordinates: [0, 0] // Default coordinates
+                    },
+                    date: alert.date || (alert.timestamp ? alert.timestamp.split('T')[0] : new Date().toISOString().split('T')[0]),
+                    severity: severity || 'Medium',
+                    deaths: 0, // Default values since these might not be in alerts
+                    injured: 0,
+                    description: alert.description || '',
+                    affectedAreas: alert.affectedAreas ? alert.affectedAreas.split(',').map(a => a.trim()) : [],
+                    responseEfforts: 'Ongoing monitoring and assessment'
+                };
+            }
+
+            // Function to get all real-world disasters of a specific type
+            function getAllDisastersOfType(disasterType) {
+                // Get only historical disasters (real-world disasters that have been noted)
+                const historicalDisastersOfType = getDisastersByType(disasterType);
+                console.log('Historical disasters of type ' + disasterType + ':', historicalDisastersOfType.length);
+
+                // Return only historical disasters
+                return historicalDisastersOfType;
+            }
+
+            // Handle disaster type selection
+            $('#insightDisasterType').change(function() {
+                const disasterType = $(this).val();
+
+                if (disasterType) {
+                    // Get all historical disasters of the selected type
+                    const disasters = getAllDisastersOfType(disasterType);
+
+                    if (disasters.length > 0) {
+                        // Show containers
+                        $('#statsContainer').removeClass('hidden');
+                        $('#chartContainer').removeClass('hidden');
+                        $('#timelineContainer').removeClass('hidden');
+                        $('#impactContainer').removeClass('hidden');
+                        $('#downloadContainer').removeClass('hidden');
+
+                        // Update statistics
+                        updateStatistics(disasters);
+
+                        // Update charts
+                        updateCountryChart(disasters);
+                        updateTimelineChart(disasters);
+                        updateImpactChart(disasters);
+                    } else {
+                        // Hide containers
+                        $('#statsContainer').addClass('hidden');
+                        $('#chartContainer').addClass('hidden');
+                        $('#timelineContainer').addClass('hidden');
+                        $('#impactContainer').addClass('hidden');
+                        $('#downloadContainer').addClass('hidden');
+
+                        // Show no data message
+                        alert('No data available for the selected disaster type.');
+                    }
+                } else {
+                    // Hide containers when no disaster type is selected
+                    $('#statsContainer').addClass('hidden');
+                    $('#chartContainer').addClass('hidden');
+                    $('#timelineContainer').addClass('hidden');
+                    $('#impactContainer').addClass('hidden');
+                    $('#downloadContainer').addClass('hidden');
+                }
+            });
+
+            // Handle download button click
+            $('#downloadBtn').click(function(e) {
+                e.preventDefault();
+                const disasterType = $('#insightDisasterType').val();
+                if (disasterType) {
+                    generateReport(disasterType);
+                }
+            });
+
+            // Function to update statistics
+            function updateStatistics(disasters) {
+                // Calculate total events
+                $('#totalEvents').text(disasters.length);
+
+                // Calculate total deaths
+                const totalDeaths = disasters.reduce((sum, disaster) => sum + (disaster.deaths || 0), 0);
+                $('#totalDeaths').text(totalDeaths.toLocaleString());
+
+                // Calculate total injured
+                const totalInjured = disasters.reduce((sum, disaster) => sum + (disaster.injured || 0), 0);
+                $('#totalInjured').text(totalInjured.toLocaleString());
+
+                // Find most affected country/region
+                const countryCounts = {};
+                disasters.forEach(disaster => {
+                    const country = disaster.location.country;
+                    countryCounts[country] = (countryCounts[country] || 0) + 1;
+                });
+
+                let mostAffectedCountry = '';
+                let maxCount = 0;
+
+                for (const country in countryCounts) {
+                    if (countryCounts[country] > maxCount) {
+                        mostAffectedCountry = country;
+                        maxCount = countryCounts[country];
+                    }
+                }
+
+                $('#mostAffected').text(mostAffectedCountry || '-');
+            }
+
+            // Function to update country distribution chart
+            function updateCountryChart(disasters) {
+                // Group disasters by country
+                const countryCounts = {};
+                disasters.forEach(disaster => {
+                    const country = disaster.location.country;
+                    countryCounts[country] = (countryCounts[country] || 0) + 1;
+                });
+
+                // Prepare data for chart
+                const labels = Object.keys(countryCounts);
+                const data = Object.values(countryCounts);
+
+                // Generate colors
+                const backgroundColors = generateColors(labels.length);
+
+                // Create or update chart
+                const ctx = document.getElementById('countryChart').getContext('2d');
+
+                if (countryChart) {
+                    countryChart.destroy();
+                }
+
+                countryChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Number of Events by Country',
+                            data: data,
+                            backgroundColor: backgroundColors,
+                            borderColor: 'rgba(0, 0, 0, 0.1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    precision: 0
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Function to update timeline chart
+            function updateTimelineChart(disasters) {
+                // Group disasters by year
+                const yearCounts = {};
+
+                // Get current year
+                const currentYear = new Date().getFullYear();
+
+                // Initialize last 5 years
+                for (let i = 0; i < 5; i++) {
+                    const year = currentYear - i;
+                    yearCounts[year] = 0;
+                }
+
+                // Count disasters by year
+                disasters.forEach(disaster => {
+                    const year = parseInt(disaster.date.split('-')[0]);
+                    if (year >= currentYear - 4 && year <= currentYear) {
+                        yearCounts[year] = (yearCounts[year] || 0) + 1;
+                    }
+                });
+
+                // Sort years
+                const sortedYears = Object.keys(yearCounts).sort();
+
+                // Prepare data for chart
+                const labels = sortedYears;
+                const data = sortedYears.map(year => yearCounts[year]);
+
+                // Create or update chart
+                const ctx = document.getElementById('timelineChart').getContext('2d');
+
+                if (timelineChart) {
+                    timelineChart.destroy();
+                }
+
+                timelineChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Number of Events by Year',
+                            data: data,
+                            backgroundColor: 'rgba(52, 152, 219, 0.2)',
+                            borderColor: 'rgba(52, 152, 219, 1)',
+                            borderWidth: 2,
+                            tension: 0.1,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    precision: 0
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Function to update impact chart
+            function updateImpactChart(disasters) {
+                // Calculate casualties and injuries by severity
+                const impactBySeverity = {
+                    'Critical': { deaths: 0, injured: 0 },
+                    'High': { deaths: 0, injured: 0 },
+                    'Medium': { deaths: 0, injured: 0 },
+                    'Low': { deaths: 0, injured: 0 }
+                };
+
+                disasters.forEach(disaster => {
+                    if (impactBySeverity[disaster.severity]) {
+                        impactBySeverity[disaster.severity].deaths += disaster.deaths || 0;
+                        impactBySeverity[disaster.severity].injured += disaster.injured || 0;
+                    }
+                });
+
+                // Prepare data for chart
+                const labels = Object.keys(impactBySeverity);
+                const deathsData = labels.map(severity => impactBySeverity[severity].deaths);
+                const injuredData = labels.map(severity => impactBySeverity[severity].injured);
+
+                // Create or update chart
+                const ctx = document.getElementById('impactChart').getContext('2d');
+
+                if (impactChart) {
+                    impactChart.destroy();
+                }
+
+                impactChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: 'Deaths',
+                                data: deathsData,
+                                backgroundColor: 'rgba(231, 76, 60, 0.7)',
+                                borderColor: 'rgba(231, 76, 60, 1)',
+                                borderWidth: 1
+                            },
+                            {
+                                label: 'Injured',
+                                data: injuredData,
+                                backgroundColor: 'rgba(241, 196, 15, 0.7)',
+                                borderColor: 'rgba(241, 196, 15, 1)',
+                                borderWidth: 1
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Function to generate report
+            function generateReport(disasterType) {
+                // Get all disasters of the selected type (historical + registered)
+                const disasters = getAllDisastersOfType(disasterType);
+
+                if (disasters.length === 0) {
+                    alert('No data available for the selected disaster type.');
+                    return;
+                }
+
+                // Initialize jsPDF
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+
+                // Add title
+                doc.setFontSize(22);
+                doc.setTextColor(44, 62, 80);
+                doc.text(`${disasterType} Disaster Report`, 105, 20, { align: 'center' });
+
+                // Add date
+                doc.setFontSize(10);
+                doc.setTextColor(100, 100, 100);
+                doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 105, 30, { align: 'center' });
+
+                // Add horizontal line
+                doc.setDrawColor(200, 200, 200);
+                doc.line(20, 35, 190, 35);
+
+                // Add summary
+                doc.setFontSize(16);
+                doc.setTextColor(44, 62, 80);
+                doc.text('Summary', 20, 45);
+
+                doc.setFontSize(12);
+                doc.setTextColor(60, 60, 60);
+                doc.text(`Total Events: ${disasters.length}`, 20, 55);
+
+                const totalDeaths = disasters.reduce((sum, disaster) => sum + (disaster.deaths || 0), 0);
+                doc.text(`Total Deaths: ${totalDeaths.toLocaleString()}`, 20, 65);
+
+                const totalInjured = disasters.reduce((sum, disaster) => sum + (disaster.injured || 0), 0);
+                doc.text(`Total Injured: ${totalInjured.toLocaleString()}`, 20, 75);
+
+                // Add events list
+                doc.setFontSize(16);
+                doc.setTextColor(44, 62, 80);
+                doc.text('Event List', 20, 95);
+
+                doc.setFontSize(10);
+                doc.setTextColor(60, 60, 60);
+
+                let yPosition = 105;
+                disasters.slice(0, 10).forEach((disaster, index) => {
+                    doc.text(`${index + 1}. ${disaster.title}`, 20, yPosition);
+                    doc.text(`Date: ${disaster.date}`, 30, yPosition + 5);
+                    doc.text(`Location: ${disaster.location.country}, ${disaster.location.region}`, 30, yPosition + 10);
+                    doc.text(`Severity: ${disaster.severity}`, 30, yPosition + 15);
+                    doc.text(`Casualties: ${disaster.deaths || 0} deaths, ${disaster.injured || 0} injured`, 30, yPosition + 20);
+
+                    yPosition += 30;
+
+                    // Add new page if needed
+                    if (yPosition > 270 && index < disasters.length - 1) {
+                        doc.addPage();
+                        yPosition = 20;
+                    }
+                });
+
+                // If there are more disasters, add a note
+                if (disasters.length > 10) {
+                    doc.text(`Note: This report shows only the first 10 of ${disasters.length} events.`, 20, yPosition);
+                }
+
+                // Save the PDF
+                doc.save(`${disasterType.toLowerCase()}-disaster-report.pdf`);
+            }
+
+
+
+            // Helper function to generate colors
+            function generateColors(count) {
+                const colors = [
+                    'rgba(52, 152, 219, 0.7)',  // Blue
+                    'rgba(46, 204, 113, 0.7)',  // Green
+                    'rgba(155, 89, 182, 0.7)',  // Purple
+                    'rgba(52, 73, 94, 0.7)',    // Dark Blue
+                    'rgba(230, 126, 34, 0.7)',  // Orange
+                    'rgba(231, 76, 60, 0.7)',   // Red
+                    'rgba(241, 196, 15, 0.7)',  // Yellow
+                    'rgba(26, 188, 156, 0.7)'   // Turquoise
+                ];
+
+                const result = [];
+
+                for (let i = 0; i < count; i++) {
+                    result.push(colors[i % colors.length]);
+                }
+
+                return result;
+            }
+        });
+    </script>
+
+    <!-- Modern UI JavaScript -->
+    <script src="js/modern-ui.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Precautions - Disaster Management System</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/modern-theme.css">
+    <link rel="stylesheet" href="css/table-text-fix.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <!-- Fix for purple lines/outlines -->
+    <style>
+        select, input, textarea {
+            outline: none !important;
+        }
+
+        /* Disaster tabs styling */
+        .disaster-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .disaster-tab {
+            padding: 10px 15px;
+            background-color: #f1f1f1;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .disaster-tab:hover, .disaster-tab.active {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .precaution-content {
+            display: none;
+        }
+
+        .precaution-content.active {
+            display: block;
+        }
+
+        .precaution-phases {
+            margin-bottom: 20px;
+        }
+
+        .phase-title {
+            color: #3498db;
+            margin-bottom: 10px;
+        }
+
+        .precaution-list li {
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Session check script -->
+    <script>
+        // Check if user is logged in
+        function checkUserSession() {
+            const session = JSON.parse(localStorage.getItem('currentUserSession'));
+            if (!session || !session.active) {
+                window.location.href = 'login.html';
+            } else {
+                // Display user welcome message
+                const userWelcome = document.getElementById('userWelcome');
+                if (userWelcome) {
+                    userWelcome.textContent = `Welcome, ${session.user.fullname || session.user.username}`;
+                }
+            }
+        }
+
+        // Call the function when page loads
+        window.addEventListener('DOMContentLoaded', checkUserSession);
+    </script>
+
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="home.html" class="logo">Disaster Management System</a>
+            <button type="button" class="nav-toggle-btn" aria-label="Toggle navigation menu" title="Toggle Menu">
+                <i class="fas fa-bars"></i>
+            </button>
+            <ul class="nav-links">
+                <li><a href="home.html">Home</a></li>
+                <li><a href="alert.html">Alerts</a></li>
+                <li><a href="registered-alerts.html">Registered Alerts</a></li>
+                <li><a href="occurred-disasters.html">Occurred Disasters</a></li>
+                <li><a href="insight.html">Insights</a></li>
+                <li><a href="precaution.html">Precautions</a></li>
+                <li><a href="email-logs.html">Email Logs</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="#" id="logoutBtn">Logout</a></li>
+                <li><span id="userWelcome" class="user-welcome"></span></li>
+            </ul>
+        </div>
+    </nav>
+
+
+
+
+    <div class="container">
+        <h1 class="text-center">Disaster Safety Protocols</h1>
+        <p class="text-center mb-20">Learn how to prepare for, respond to, and recover from various types of disasters.</p>
+
+        <div class="card">
+            <h2 class="card-title">Select Disaster Type</h2>
+            <div class="disaster-tabs">
+                <div class="disaster-tab active" data-disaster="earthquake">Earthquake</div>
+                <div class="disaster-tab" data-disaster="flood">Flood</div>
+                <div class="disaster-tab" data-disaster="hurricane">Hurricane</div>
+                <div class="disaster-tab" data-disaster="tornado">Tornado</div>
+                <div class="disaster-tab" data-disaster="wildfire">Wildfire</div>
+                <div class="disaster-tab" data-disaster="tsunami">Tsunami</div>
+                <div class="disaster-tab" data-disaster="drought">Drought</div>
+                <div class="disaster-tab" data-disaster="avalanche">Avalanche</div>
+                <div class="disaster-tab" data-disaster="volcano">Volcano</div>
+                <div class="disaster-tab" data-disaster="cyclone">Cyclone</div>
+                <div class="disaster-tab" data-disaster="landslide">Landslide</div>
+                <div class="disaster-tab" data-disaster="blizzard">Blizzard</div>
+                <div class="disaster-tab" data-disaster="heatwave">Heatwave</div>
+                <div class="disaster-tab" data-disaster="storm">Storm</div>
+            </div>
+
+            <div class="text-center mb-20">
+                <a href="#" class="download-btn" id="downloadCurrentPrecautions">
+                    <i class="fas fa-download"></i>
+                    <span>Download Precautions</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Earthquake Precautions -->
+        <div class="precaution-content active" id="earthquake-precautions">
+            <div class="card">
+                <h2 class="card-title">Earthquake Safety Protocols</h2>
+
+                <div class="precaution-phases">
+                    <h3 class="phase-title">Before an Earthquake</h3>
+                    <ul class="precaution-list">
+                        <li>Secure heavy furniture, appliances, and hanging items to prevent them from falling.</li>
+                        <li>Create an emergency plan and practice earthquake drills with your family.</li>
+                        <li>Prepare an emergency kit with food, water, medications, first aid supplies, and important documents.</li>
+                        <li>Know how to turn off gas, water, and electricity in your home.</li>
+                        <li>Identify safe spots in each room, such as under sturdy tables or against interior walls.</li>
+                    </ul>
+                </div>
+
+                <div class="precaution-phases">
+                    <h3 class="phase-title">During an Earthquake</h3>
+                    <ul class="precaution-list">
+                        <li><strong>Drop, Cover, and Hold On</strong> - Drop to the ground, take cover under a sturdy table or desk, and hold on until the shaking stops.</li>
+                        <li>If there's no table nearby, cover your face and head with your arms and crouch in an inside corner of the building.</li>
+                        <li>Stay away from glass, windows, outside doors and walls, and anything that could fall.</li>
+                        <li>If you're outdoors, stay in the open away from buildings, streetlights, and utility wires.</li>
+                        <li>If you're in a vehicle, pull over to a clear location and stop. Avoid bridges, overpasses, and power lines.</li>
+                    </ul>
+                </div>
+
+                <div class="precaution-phases">
+                    <h3 class="phase-title">After an Earthquake</h3>
+                    <ul class="precaution-list">
+                        <li>Check yourself and others for injuries. Provide first aid if needed.</li>
+                        <li>Be prepared for aftershocks, which can occur minutes, hours, or days after the main quake.</li>
+                        <li>Check for gas leaks, electrical system damage, and water line damage. If you smell gas, open windows and leave the building.</li>
+                        <li>Stay away from damaged areas unless your assistance has been specifically requested.</li>
+                        <li>Listen to a battery-operated radio or television for the latest emergency information.</li>
+                    </ul>
+                </div>
+
+                <div class="precaution-phases">
+                    <h3 class="phase-title">Emergency Numbers</h3>
+                    <ul class="precaution-list">
+                        <li><strong>Emergency Services:</strong> 911 (US) / 112 (EU) / 112 (India)</li>
+                        <li><strong>FEMA:</strong> 1-800-621-3362</li>
+                        <li><strong>Disaster Distress Helpline:</strong> 1-800-985-5990</li>
+                        <li><strong>American Red Cross:</strong> 1-800-733-2767</li>
+                        <li><strong>Poison Control:</strong> 1-800-222-1222</li>
+                        <li><strong>India Disaster Helpline:</strong> 1078</li>
+                        <li><strong>India National Emergency Number:</strong> 112</li>
+                        <li><strong>India Ambulance:</strong> 108</li>
+                        <li><strong>India National Disaster Response Force:</strong> 011-24363260</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Flood Precautions -->
+        <div class="precaution-content" id="flood-precautions">
+            <div class="card">
+                <h2 class="card-title">Flood Safety Protocols</h2>
+
+                <div class="precaution-phases">
+                    <h3 class="phase-title">Before a Flood</h3>
+                    <ul class="precaution-list">
+                        <li>Know your area's flood risk and elevation level.</li>
+                        <li>Prepare an emergency kit and create a family communication plan.</li>
+                        <li>Consider buying flood insurance if you live in a flood-prone area.</li>
+                        <li>Elevate the furnace, water heater, and electric panel if susceptible to flooding.</li>
+                        <li>Install check valves in plumbing to prevent floodwater from backing up into drains.</li>
+                    </ul>
+                </div>
+
+                <div class="precaution-phases">
+                    <h3 class="phase-title">During a Flood</h3>
+                    <ul class="precaution-list">
+                        <li>Listen to the radio or television for information and updates.</li>
+                        <li>Be aware of streams, drainage channels, canyons, and other areas known to flood suddenly.</li>
+                        <li>If there is any possibility of a flash flood, move immediately to higher ground.</li>
+                        <li>Do not walk through moving water. Six inches of moving water can make you fall.</li>
+                        <li>Do not drive into flooded areas. Turn around and go another way.</li>
+                    </ul>
+                </div>
+
+                <div class="precaution-phases">
+                    <h3 class="phase-title">After a Flood</h3>
+                    <ul class="precaution-list">
+                        <li>Return home only when authorities indicate it is safe.</li>
+                        <li>Avoid standing water as it may be electrically charged from underground or downed power lines.</li>
+                        <li>Be aware of areas where floodwaters have receded. Roads may have weakened and could collapse.</li>
+                        <li>Clean and disinfect everything that got wet. Mud left from floodwater can contain sewage and chemicals.</li>
+                        <li>Throw away food that has come into contact with floodwater.</li>
+                    </ul>
+                </div>
+
+                <div class="precaution-phases">
+                    <h3 class="phase-title">Emergency Numbers</h3>
+                    <ul class="precaution-list">
+                        <li><strong>Emergency Services:</strong> 911 (US) / 112 (EU) / 112 (India)</li>
+                        <li><strong>FEMA Flood Helpline:</strong> 1-800-621-3362</li>
+                        <li><strong>National Flood Insurance Program:</strong> 1-800-427-4661</li>
+                        <li><strong>American Red Cross:</strong> 1-800-733-2767</li>
+                        <li><strong>Coast Guard Emergency:</strong> 1-800-424-8802</li>
+                        <li><strong>India Disaster Helpline:</strong> 1078</li>
+                        <li><strong>India Ambulance:</strong> 108</li>
+                        <li><strong>India National Disaster Response Force:</strong> 011-24363260</li>
+                        <li><strong>India Central Water Commission:</strong> 011-26106523</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Other disaster precautions would be added here in a similar format -->
+        <!-- For brevity, I'm only showing two complete examples -->
+
+        <!-- Hurricane Precautions (Simplified) -->
+        <div class="precaution-content" id="hurricane-precautions">
+            <div class="card">
+                <h2 class="card-title">Hurricane Safety Protocols</h2>
+                <p>Hurricanes are powerful tropical storms with sustained winds of 74 mph or higher. They can cause catastrophic damage to coastlines and several hundred miles inland.</p>
+
+                <div class="precaution-phases">
+                    <h3 class="phase-title">Key Safety Measures</h3>
+                    <ul class="precaution-list">
+                        <li>Create an evacuation plan and follow official evacuation orders.</li>
+                        <li>Secure your home by boarding up windows and reinforcing doors.</li>
+                        <li>Prepare an emergency kit with at least 3 days of supplies.</li>
+                        <li>Stay indoors during the hurricane and away from windows and glass doors.</li>
+                        <li>Do not walk, swim, or drive through flood waters.</li>
+                    </ul>
+                </div>
+
+                <div class="precaution-phases">
+                    <h3 class="phase-title">Emergency Numbers</h3>
+                    <ul class="precaution-list">
+                        <li><strong>Emergency Services:</strong> 911 (US) / 112 (EU) / 112 (India)</li>
+                        <li><strong>National Hurricane Center:</strong> 1-305-229-4470</li>
+                        <li><strong>FEMA Disaster Assistance:</strong> 1-800-621-3362</li>
+                        <li><strong>American Red Cross:</strong> 1-800-733-2767</li>
+                        <li><strong>National Weather Service:</strong> 1-301-713-0622</li>
+                        <li><strong>India Disaster Helpline:</strong> 1078</li>
+                        <li><strong>India Meteorological Department:</strong> 011-24631913</li>
+                        <li><strong>India Cyclone Warning Division:</strong> 011-24652484</li>
+                        <li><strong>India National Disaster Response Force:</strong> 011-24363260</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tornado Precautions -->
+        <div class="precaution-content" id="tornado-precautions">
+            <div class="card">
+                <h2 class="card-title">Tornado Safety Protocols</h2>
+
+                <div class="precaution-phases">
+                    <h3 class="phase-title">Before a Tornado</h3>
+                    <ul class="precaution-list">
+                        <li>Know the signs of a tornado: dark, often greenish sky; large hail; large, dark, low-lying cloud; loud roar, similar to a freight train.</li>
+                        <li>Have a disaster plan and an emergency kit ready.</li>
+                        <li>Identify a safe room in your home where family members could gather during a tornado.</li>
+                        <li>Sign up for your community's warning system. The Emergency Alert System (EAS) and NOAA Weather Radio also provide emergency alerts.</li>
+                        <li>Practice periodic tornado drills so everyone knows what to do if a tornado approaches.</li>
+                    </ul>
+                </div>
+
+                <div class="precaution-phases">
+                    <h3 class="phase-title">During a Tornado</h3>
+                    <ul class="precaution-list">
+                        <li>If you're in a building, go to a pre-designated shelter area such as a safe room, basement, storm cellar, or the lowest building level.</li>
+                        <li>If there is no basement, go to the center of an interior room on the lowest level away from corners, windows, doors, and outside walls.</li>
+                        <li>If you're in a vehicle, trailer, or mobile home, get out immediately and go to the lowest floor of a sturdy, nearby building or storm shelter.</li>
+                        <li>If you're outside with no shelter, lie flat in a nearby ditch or depression and cover your head with your hands. Do not get under an overpass or bridge.</li>
+                        <li>Watch out for flying debris. Flying debris from tornadoes causes most fatalities and injuries.</li>
+                    </ul>
+                </div>
+
+                <div class="precaution-phases">
+                    <h3 class="phase-title">After a Tornado</h3>
+                    <ul class="precaution-list">
+                        <li>Keep listening to EAS, NOAA Weather Radio, and local authorities for updated information.</li>
+                        <li>If you are trapped, cover your mouth with a cloth to avoid breathing dust. Try to send a text, bang on a pipe or wall, or use a whistle instead of shouting.</li>
+                        <li>Stay clear of fallen power lines or broken utility lines.</li>
+                        <li>Do not enter damaged buildings until you are told that they are safe.</li>
+                        <li>Save your phone calls for emergencies. Phone systems are often down or busy after a disaster. Use text messages or social media to communicate with family and friends.</li>
+                    </ul>
+                </div>
+
+                <div class="precaution-phases">
+                    <h3 class="phase-title">Emergency Numbers</h3>
+                    <ul class="precaution-list">
+                        <li><strong>Emergency Services:</strong> 911 (US) / 112 (EU) / 112 (India)</li>
+                        <li><strong>FEMA Disaster Assistance:</strong> 1-800-621-3362</li>
+                        <li><strong>National Weather Service:</strong> 1-301-713-0622</li>
+                        <li><strong>American Red Cross:</strong> 1-800-733-2767</li>
+                        <li><strong>Storm Prediction Center:</strong> 1-405-325-2520</li>
+                        <li><strong>India Disaster Helpline:</strong> 1078</li>
+                        <li><strong>India Meteorological Department:</strong> 011-24631913</li>
+                        <li><strong>India National Disaster Response Force:</strong> 011-24363260</li>
+                        <li><strong>India State Disaster Management Authority:</strong> Check your state's emergency number</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Wildfire Precautions -->
+        <div class="precaution-content" id="wildfire-precautions">
+            <div class="card">
+                <h2 class="card-title">Wildfire Safety Protocols</h2>
+
+                <div class="precaution-phases">
+                    <h3 class="phase-title">Before a Wildfire</h3>
+                    <ul class="precaution-list">
+                        <li>Create a defensible space around your home by clearing away flammable materials.</li>
+                        <li>Use fire-resistant or non-combustible materials on the roof and exterior of the dwelling.</li>
+                        <li>Keep emergency supplies, including a first aid kit, in a safe place.</li>
+                        <li>Develop an emergency evacuation plan and make sure everyone in your family knows it.</li>
+                        <li>Sign up for your community's warning system and know your evacuation routes.</li>
+                    </ul>
+                </div>
+
+                <div class="precaution-phases">
+                    <h3 class="phase-title">During a Wildfire</h3>
+                    <ul class="precaution-list">
+                        <li>Listen to emergency officials and evacuate immediately if ordered to do so.</li>
+                        <li>If trapped, call 911 and give your location.</li>
+                        <li>If you have time before evacuating, close all windows, vents, and doors to prevent drafts.</li>
+                        <li>Remove lightweight curtains and move flammable furniture to the center of the room.</li>
+                        <li>Turn off gas at the meter and turn off pilot lights.</li>
+                    </ul>
+                </div>
+
+                <div class="precaution-phases">
+                    <h3 class="phase-title">After a Wildfire</h3>
+                    <ul class="precaution-list">
+                        <li>Return home only when authorities say it is safe.</li>
+                        <li>Use caution when entering burned areas as hazards may still exist.</li>
+                        <li>Check the roof immediately and extinguish any sparks or embers.</li>
+                        <li>Check for hot spots in your yard and extinguish them with water.</li>
+                        <li>Wear a dust mask and wet debris down to minimize breathing dust particles.</li>
+                    </ul>
+                </div>
+
+                <div class="precaution-phases">
+                    <h3 class="phase-title">Emergency Numbers</h3>
+                    <ul class="precaution-list">
+                        <li><strong>Emergency Services:</strong> 911 (US) / 112 (EU) / 112 (India)</li>
+                        <li><strong>U.S. Forest Service:</strong> 1-800-832-1355</li>
+                        <li><strong>FEMA Disaster Assistance:</strong> 1-800-621-3362</li>
+                        <li><strong>American Red Cross:</strong> 1-800-733-2767</li>
+                        <li><strong>Wildfire Reporting Hotline:</strong> 1-888-275-8747</li>
+                        <li><strong>India Disaster Helpline:</strong> 1078</li>
+                        <li><strong>India Fire Service:</strong> 101</li>
+                        <li><strong>India Forest Department:</strong> Contact your state's forest department</li>
+                        <li><strong>India National Disaster Response Force:</strong> 011-24363260</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tsunami Precautions -->
+        <div class="precaution-content" id="tsunami-precautions">
+            <div class="card">
+                <h2 class="card-title">Tsunami Safety Protocols</h2>
+
+                <div class="precaution-phases">
+                    <h3 class="phase-title">Before a Tsunami</h3>
+                    <ul class="precaution-list">
+                        <li>Know if your home, school, workplace, or other frequently visited locations are in tsunami hazard areas.</li>
+                        <li>Learn the warning signs of a tsunami: a strong earthquake, a sudden rise or fall of the ocean, or a loud roar from the ocean.</li>
+                        <li>Make an emergency plan and prepare a disaster supply kit.</li>
+                        <li>Know your community's evacuation routes and designated safe zones.</li>
+                        <li>If you live in a coastal area, elevate your home to minimize flood damage.</li>
+                    </ul>
+                </div>
+
+                <div class="precaution-phases">
+                    <h3 class="phase-title">During a Tsunami Warning</h3>
+                    <ul class="precaution-list">
+                        <li>If you feel a strong earthquake while at the coast, move immediately to higher ground. Don't wait for official warnings.</li>
+                        <li>If you see the water recede unusually far exposing the sea floor, run to high ground immediately.</li>
+                        <li>Listen to emergency information and alerts.</li>
+                        <li>Evacuate if advised by authorities. Move to higher ground or inland.</li>
+                        <li>If you cannot get to higher ground, go to the highest floor of a sturdy building.</li>
+                    </ul>
+                </div>
+
+                <div class="precaution-phases">
+                    <h3 class="phase-title">After a Tsunami</h3>
+                    <ul class="precaution-list">
+                        <li>Stay away from tsunami-affected areas until officials say it is safe to return.</li>
+                        <li>Avoid disaster areas and debris in the water; water may be contaminated.</li>
+                        <li>Stay away from damaged buildings, roads, and bridges.</li>
+                        <li>Check yourself for injuries and get first aid if necessary.</li>
+                        <li>Text instead of call. Phone lines may be down or busy after a disaster.</li>
+                    </ul>
+                </div>
+
+                <div class="precaution-phases">
+                    <h3 class="phase-title">Emergency Numbers</h3>
+                    <ul class="precaution-list">
+                        <li><strong>Emergency Services:</strong> 911 (US) / 112 (EU) / 112 (India)</li>
+                        <li><strong>NOAA Tsunami Warning Center:</strong> 1-808-689-8207</li>
+                        <li><strong>FEMA Disaster Assistance:</strong> 1-800-621-3362</li>
+                        <li><strong>American Red Cross:</strong> 1-800-733-2767</li>
+                        <li><strong>Coast Guard Emergency:</strong> 1-800-424-8802</li>
+                        <li><strong>India Disaster Helpline:</strong> 1078</li>
+                        <li><strong>India Coast Guard:</strong> 1554</li>
+                        <li><strong>India Meteorological Department:</strong> 011-24631913</li>
+                        <li><strong>India National Disaster Response Force:</strong> 011-24363260</li>
+                        <li><strong>India Tsunami Warning Centre:</strong> 044-66783500</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Drought Precautions -->
+        <div class="precaution-content" id="drought-precautions">
+            <div class="card">
+                <h2 class="card-title">Drought Safety Protocols</h2>
+
+                <div class="precaution-phases">
+                    <h3 class="phase-title">Water Conservation Measures</h3>
+                    <ul class="precaution-list">
+                        <li>Fix leaky faucets, toilets, and pipes in your home.</li>
+                        <li>Install water-saving devices on faucets, toilets, and appliances.</li>
+                        <li>Take shorter showers and avoid baths, which use more water.</li>
+                        <li>Only run dishwashers and washing machines with full loads.</li>
+                        <li>Collect and reuse water when possible (e.g., use shower water for plants).</li>
+                    </ul>
+                </div>
+
+                <div class="precaution-phases">
+                    <h3 class="phase-title">Outdoor Water Conservation</h3>
+                    <ul class="precaution-list">
+                        <li>Water lawns and gardens during the coolest parts of the day to minimize evaporation.</li>
+                        <li>Use drought-resistant plants in your landscaping.</li>
+                        <li>Use mulch around plants to retain moisture.</li>
+                        <li>Collect rainwater in barrels for garden use.</li>
+                        <li>Avoid washing cars or use commercial car washes that recycle water.</li>
+                    </ul>
+                </div>
+
+                <div class="precaution-phases">
+                    <h3 class="phase-title">Health Precautions During Drought</h3>
+                    <ul class="precaution-list">
+                        <li>Stay hydrated by drinking plenty of water, even if water restrictions are in place.</li>
+                        <li>Be aware of air quality, as drought conditions can increase dust and allergens.</li>
+                        <li>Watch for signs of heat-related illness, which can be more common during droughts.</li>
+                        <li>Store emergency water supplies in case of severe water shortages.</li>
+                        <li>Follow all local water use restrictions and conservation guidelines.</li>
+                    </ul>
+                </div>
+
+                <div class="precaution-phases">
+                    <h3 class="phase-title">Emergency Numbers</h3>
+                    <ul class="precaution-list">
+                        <li><strong>Emergency Services:</strong> 911 (US) / 112 (EU) / 112 (India)</li>
+                        <li><strong>EPA Safe Drinking Water Hotline:</strong> 1-800-426-4791</li>
+                        <li><strong>FEMA Disaster Assistance:</strong> 1-800-621-3362</li>
+                        <li><strong>CDC Health Information:</strong> 1-800-232-4636</li>
+                        <li><strong>National Drought Mitigation Center:</strong> 1-402-472-6707</li>
+                        <li><strong>India Disaster Helpline:</strong> 1078</li>
+                        <li><strong>India Water Resources Ministry:</strong> 011-23710305</li>
+                        <li><strong>India National Disaster Response Force:</strong> 011-24363260</li>
+                        <li><strong>India Meteorological Department:</strong> 011-24631913</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Avalanche Precautions -->
+        <div class="precaution-content" id="avalanche-precautions">
+            <div class="card">
+                <h2 class="card-title">Avalanche Safety Protocols</h2>
+
+                <div class="precaution-phases">
+                    <h3 class="phase-title">Before Entering Avalanche Terrain</h3>
+                    <ul class="precaution-list">
+                        <li>Check avalanche forecasts and weather conditions before heading out.</li>
+                        <li>Take an avalanche safety course to learn about hazard assessment.</li>
+                        <li>Always carry proper avalanche safety equipment: transceiver, probe, and shovel.</li>
+                        <li>Never travel alone in avalanche terrain.</li>
+                        <li>Plan your route to avoid high-risk avalanche areas.</li>
+                    </ul>
+                </div>
+
+                <div class="precaution-phases">
+                    <h3 class="phase-title">During Avalanche Risk</h3>
+                    <ul class="precaution-list">
+                        <li>Cross dangerous areas one person at a time to minimize risk.</li>
+                        <li>Watch for warning signs: recent avalanche activity, cracking or collapsing snow, or hollow sounds underfoot.</li>
+                        <li>Maintain distance between group members when crossing slopes.</li>
+                        <li>Keep an eye on changing weather conditions.</li>
+                        <li>Be prepared to change plans if conditions worsen.</li>
+                    </ul>
+                </div>
+
+                <div class="precaution-phases">
+                    <h3 class="phase-title">If Caught in an Avalanche</h3>
+                    <ul class="precaution-list">
+                        <li>Try to move to the side of the avalanche or grab onto trees or rocks.</li>
+                        <li>Discard heavy equipment like skis or snowboards.</li>
+                        <li>Fight to stay on top of the snow using a swimming motion.</li>
+                        <li>Create an air pocket in front of your face before the snow settles.</li>
+                        <li>If buried, conserve energy and oxygen by breathing slowly and remaining calm.</li>
+                    </ul>
+                </div>
+
+                <div class="precaution-phases">
+                    <h3 class="phase-title">Emergency Numbers</h3>
+                    <ul class="precaution-list">
+                        <li><strong>Emergency Services:</strong> 911 (US) / 112 (EU) / 112 (India)</li>
+                        <li><strong>National Avalanche Center:</strong> 1-406-587-6984</li>
+                        <li><strong>Mountain Rescue Association:</strong> 1-800-851-3051</li>
+                        <li><strong>American Alpine Club:</strong> 1-303-384-0110</li>
+                        <li><strong>U.S. Forest Service Avalanche Information:</strong> 1-801-975-3310</li>
+                        <li><strong>India Disaster Helpline:</strong> 1078</li>
+                        <li><strong>India Mountaineering Foundation:</strong> 011-24111211</li>
+                        <li><strong>India National Disaster Response Force:</strong> 011-24363260</li>
+                        <li><strong>India Snow & Avalanche Study Establishment:</strong> 0135-2524062</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Volcano Precautions -->
+        <div class="precaution-content" id="volcano-precautions">
+            <div class="card">
+                <h2 class="card-title">Volcano Safety Protocols</h2>
+
+                <div class="precaution-phases">
+                    <h3 class="phase-title">Before a Volcanic Eruption</h3>
+                    <ul class="precaution-list">
+                        <li>Be aware if you live in an active volcano zone and learn about local warning systems.</li>
+                        <li>Prepare an emergency supply kit and make a family emergency plan.</li>
+                        <li>Have dust masks available for all family members.</li>
+                        <li>Identify a shelter location away from areas at risk for volcanic hazards.</li>
+                        <li>Keep your vehicle's gas tank full in case evacuation is necessary.</li>
+                    </ul>
+                </div>
+
+                <div class="precaution-phases">
+                    <h3 class="phase-title">During a Volcanic Eruption</h3>
+                    <ul class="precaution-list">
+                        <li>Follow evacuation orders issued by authorities.</li>
+                        <li>Avoid areas downwind and river valleys downstream of the volcano.</li>
+                        <li>If caught in a rockfall, roll into a ball to protect your head.</li>
+                        <li>Wear long-sleeved shirts and pants to protect your skin from ash.</li>
+                        <li>Use goggles and wear eyeglasses instead of contact lenses to protect your eyes from ash.</li>
+                    </ul>
+                </div>
+
+                <div class="precaution-phases">
+                    <h3 class="phase-title">After a Volcanic Eruption</h3>
+                    <ul class="precaution-list">
+                        <li>Stay indoors until authorities say it is safe to go outside.</li>
+                        <li>Close all windows, doors, and dampers to keep volcanic ash from entering.</li>
+                        <li>Avoid driving in heavy ash fall unless absolutely necessary.</li>
+                        <li>Clear roofs of ash to prevent collapse, but be careful as ash makes surfaces slippery.</li>
+                        <li>Avoid contact with ash as much as possible and wear a dust mask when cleaning up.</li>
+                    </ul>
+                </div>
+
+                <div class="precaution-phases">
+                    <h3 class="phase-title">Emergency Numbers</h3>
+                    <ul class="precaution-list">
+                        <li><strong>Emergency Services:</strong> 911 (US) / 112 (EU) / 112 (India)</li>
+                        <li><strong>USGS Volcano Hazards Program:</strong> 1-650-329-4085</li>
+                        <li><strong>FEMA Disaster Assistance:</strong> 1-800-621-3362</li>
+                        <li><strong>American Red Cross:</strong> 1-800-733-2767</li>
+                        <li><strong>CDC Health Information:</strong> 1-800-232-4636</li>
+                        <li><strong>India Disaster Helpline:</strong> 1078</li>
+                        <li><strong>India National Disaster Response Force:</strong> 011-24363260</li>
+                        <li><strong>India Geological Survey:</strong> 033-23378000</li>
+                        <li><strong>India Meteorological Department:</strong> 011-24631913</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cyclone Precautions -->
+        <div class="precaution-content" id="cyclone-precautions">
+            <div class="card">
+                <h2 class="card-title">Cyclone Safety Protocols</h2>
+
+                <div class="precaution-phases">
+                    <h3 class="phase-title">Before a Cyclone</h3>
+                    <ul class="precaution-list">
+                        <li>Know your area's cyclone risk and stay informed about weather forecasts.</li>
+                        <li>Prepare an emergency kit with food, water, medications, and important documents.</li>
+                        <li>Secure your home: trim trees, reinforce roofs, and install storm shutters.</li>
+                        <li>Identify evacuation routes and safe shelters in your community.</li>
+                        <li>Keep a list of emergency contact numbers readily available.</li>
+                    </ul>
+                </div>
+
+                <div class="precaution-phases">
+                    <h3 class="phase-title">During a Cyclone</h3>
+                    <ul class="precaution-list">
+                        <li>Stay indoors and away from windows, skylights, and glass doors.</li>
+                        <li>Take shelter in the strongest part of your house, typically a small interior room.</li>
+                        <li>If advised to evacuate, do so immediately.</li>
+                        <li>Turn off utilities if instructed to do so by authorities.</li>
+                        <li>Keep listening to the radio or TV for updates and instructions.</li>
+                    </ul>
+                </div>
+
+                <div class="precaution-phases">
+                    <h3 class="phase-title">After a Cyclone</h3>
+                    <ul class="precaution-list">
+                        <li>Return home only when authorities indicate it is safe.</li>
+                        <li>Watch out for fallen power lines, damaged gas lines, and structural damage.</li>
+                        <li>Avoid floodwaters, which may be contaminated or electrically charged.</li>
+                        <li>Document property damage with photographs for insurance purposes.</li>
+                        <li>Check on neighbors, especially the elderly or those with special needs.</li>
+                    </ul>
+                </div>
+
+                <div class="precaution-phases">
+                    <h3 class="phase-title">Emergency Numbers</h3>
+                    <ul class="precaution-list">
+                        <li><strong>Emergency Services:</strong> 911 (US) / 112 (EU) / 112 (India)</li>
+                        <li><strong>National Hurricane Center:</strong> 1-305-229-4470</li>
+                        <li><strong>FEMA Disaster Assistance:</strong> 1-800-621-3362</li>
+                        <li><strong>American Red Cross:</strong> 1-800-733-2767</li>
+                        <li><strong>National Weather Service:</strong> 1-301-713-0622</li>
+                        <li><strong>India Disaster Helpline:</strong> 1078</li>
+                        <li><strong>India Meteorological Department:</strong> 011-24631913</li>
+                        <li><strong>India Cyclone Warning Division:</strong> 011-24652484</li>
+                        <li><strong>India National Disaster Response Force:</strong> 011-24363260</li>
+                        <li><strong>India Coast Guard:</strong> 1554</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Landslide Precautions -->
+        <div class="precaution-content" id="landslide-precautions">
+            <div class="card">
+                <h2 class="card-title">Landslide Safety Protocols</h2>
+
+                <div class="precaution-phases">
+                    <h3 class="phase-title">Before a Landslide</h3>
+                    <ul class="precaution-list">
+                        <li>Learn about landslide risk in your area and watch for warning signs like tilting trees or cracks in the ground.</li>
+                        <li>Create and practice an evacuation plan with your family.</li>
+                        <li>Consider a geologic evaluation of your property if you live in a high-risk area.</li>
+                        <li>Install flexible pipe fittings to avoid gas or water leaks during a landslide.</li>
+                        <li>Plant ground cover on slopes and build retaining walls to help prevent erosion.</li>
+                    </ul>
+                </div>
+
+                <div class="precaution-phases">
+                    <h3 class="phase-title">During a Landslide</h3>
+                    <ul class="precaution-list">
+                        <li>Listen for unusual sounds that might indicate moving debris, such as trees cracking or boulders knocking together.</li>
+                        <li>If you are near a stream or channel, be alert for sudden changes in water flow or water clarity.</li>
+                        <li>If you are in a landslide-prone area and it is safe to leave, evacuate immediately.</li>
+                        <li>If escape is not possible, curl into a tight ball and protect your head.</li>
+                        <li>Stay alert and awake during periods of intense rainfall, which can trigger landslides.</li>
+                    </ul>
+                </div>
+
+                <div class="precaution-phases">
+                    <h3 class="phase-title">After a Landslide</h3>
+                    <ul class="precaution-list">
+                        <li>Stay away from the slide area as there may be danger of additional slides.</li>
+                        <li>Check for injured or trapped persons near the slide area, but do not enter the direct slide area.</li>
+                        <li>Report broken utility lines and damaged roadways to appropriate authorities.</li>
+                        <li>Check building foundations, chimneys, and surrounding land for damage.</li>
+                        <li>Replant damaged ground as soon as possible to prevent further erosion.</li>
+                    </ul>
+                </div>
+
+                <div class="precaution-phases">
+                    <h3 class="phase-title">Emergency Numbers</h3>
+                    <ul class="precaution-list">
+                        <li><strong>Emergency Services:</strong> 911 (US) / 112 (EU) / 112 (India)</li>
+                        <li><strong>USGS Landslide Hazards Program:</strong> 1-800-654-4966</li>
+                        <li><strong>FEMA Disaster Assistance:</strong> 1-800-621-3362</li>
+                        <li><strong>American Red Cross:</strong> 1-800-733-2767</li>
+                        <li><strong>National Weather Service:</strong> 1-301-713-0622</li>
+                        <li><strong>India Disaster Helpline:</strong> 1078</li>
+                        <li><strong>India National Disaster Response Force:</strong> 011-24363260</li>
+                        <li><strong>India Geological Survey:</strong> 033-23378000</li>
+                        <li><strong>India State Disaster Management Authority:</strong> Check your state's emergency number</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Blizzard Precautions -->
+        <div class="precaution-content" id="blizzard-precautions">
+            <div class="card">
+                <h2 class="card-title">Blizzard Safety Protocols</h2>
+
+                <div class="precaution-phases">
+                    <h3 class="phase-title">Before a Blizzard</h3>
+                    <ul class="precaution-list">
+                        <li>Stock up on food, water, medications, and other essentials before the storm hits.</li>
+                        <li>Prepare emergency heating equipment, such as a fireplace or wood stove.</li>
+                        <li>Winterize your home by insulating walls and attics, caulking and weather-stripping doors and windows.</li>
+                        <li>Keep your vehicle's gas tank full to prevent the fuel line from freezing.</li>
+                        <li>Have emergency supplies in your vehicle, including blankets, food, water, and a first aid kit.</li>
+                    </ul>
+                </div>
+
+                <div class="precaution-phases">
+                    <h3 class="phase-title">During a Blizzard</h3>
+                    <ul class="precaution-list">
+                        <li>Stay indoors and avoid all travel unless absolutely necessary.</li>
+                        <li>If you must go outdoors, wear several layers of warm, loose-fitting clothing.</li>
+                        <li>Watch for signs of frostbite and hypothermia, such as loss of feeling or pale appearance in extremities.</li>
+                        <li>Conserve fuel by keeping your residence cooler than normal and temporarily closing off heat to some rooms.</li>
+                        <li>If using alternative heating sources, ensure proper ventilation to avoid carbon monoxide poisoning.</li>
+                    </ul>
+                </div>
+
+                <div class="precaution-phases">
+                    <h3 class="phase-title">After a Blizzard</h3>
+                    <ul class="precaution-list">
+                        <li>Check on neighbors, especially elderly or disabled individuals.</li>
+                        <li>Clear snow from roofs to prevent collapse, but be careful of ice dams and falling snow.</li>
+                        <li>Be careful when shoveling snow, as it is physically strenuous work that can lead to heart attacks.</li>
+                        <li>Watch for downed power lines and report them immediately.</li>
+                        <li>Be aware of potential flooding as snow begins to melt.</li>
+                    </ul>
+                </div>
+
+                <div class="precaution-phases">
+                    <h3 class="phase-title">Emergency Numbers</h3>
+                    <ul class="precaution-list">
+                        <li><strong>Emergency Services:</strong> 911 (US) / 112 (EU) / 112 (India)</li>
+                        <li><strong>National Weather Service:</strong> 1-301-713-0622</li>
+                        <li><strong>FEMA Disaster Assistance:</strong> 1-800-621-3362</li>
+                        <li><strong>American Red Cross:</strong> 1-800-733-2767</li>
+                        <li><strong>Road Conditions Hotline:</strong> 511 (US)</li>
+                        <li><strong>India Disaster Helpline:</strong> 1078</li>
+                        <li><strong>India Meteorological Department:</strong> 011-24631913</li>
+                        <li><strong>India National Disaster Response Force:</strong> 011-24363260</li>
+                        <li><strong>India Snow & Avalanche Study Establishment:</strong> 0135-2524062</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Heatwave Precautions -->
+        <div class="precaution-content" id="heatwave-precautions">
+            <div class="card">
+                <h2 class="card-title">Heatwave Safety Protocols</h2>
+
+                <div class="precaution-phases">
+                    <h3 class="phase-title">Before a Heatwave</h3>
+                    <ul class="precaution-list">
+                        <li>Install window air conditioners snugly and insulate if necessary.</li>
+                        <li>Check air-conditioning ducts for proper insulation.</li>
+                        <li>Install temporary window reflectors to reflect heat back outside.</li>
+                        <li>Cover windows that receive morning or afternoon sun with drapes or shades.</li>
+                        <li>Learn to recognize the symptoms of heat-related illnesses.</li>
+                    </ul>
+                </div>
+
+                <div class="precaution-phases">
+                    <h3 class="phase-title">During a Heatwave</h3>
+                    <ul class="precaution-list">
+                        <li>Stay indoors as much as possible and limit exposure to the sun.</li>
+                        <li>Drink plenty of water, even if you don't feel thirsty. Avoid alcohol and caffeine.</li>
+                        <li>Eat light, cool, easy-to-digest foods such as fruit or salads.</li>
+                        <li>Wear lightweight, light-colored, loose-fitting clothing.</li>
+                        <li>Take cool showers or baths to lower your body temperature.</li>
+                    </ul>
+                </div>
+
+                <div class="precaution-phases">
+                    <h3 class="phase-title">Protecting Vulnerable People</h3>
+                    <ul class="precaution-list">
+                        <li>Check on elderly neighbors, family members, and friends who may be more susceptible to heat.</li>
+                        <li>Never leave children or pets alone in closed vehicles.</li>
+                        <li>Ensure pets have plenty of fresh water and shade.</li>
+                        <li>If you don't have air conditioning, go to a public place that does, such as a library or shopping mall.</li>
+                        <li>Know the symptoms of heat exhaustion and heat stroke, and seek medical help immediately if someone shows these signs.</li>
+                    </ul>
+                </div>
+
+                <div class="precaution-phases">
+                    <h3 class="phase-title">Emergency Numbers</h3>
+                    <ul class="precaution-list">
+                        <li><strong>Emergency Services:</strong> 911 (US) / 112 (EU) / 112 (India)</li>
+                        <li><strong>CDC Health Information:</strong> 1-800-232-4636</li>
+                        <li><strong>National Weather Service:</strong> 1-301-713-0622</li>
+                        <li><strong>Poison Control:</strong> 1-800-222-1222</li>
+                        <li><strong>American Red Cross:</strong> 1-800-733-2767</li>
+                        <li><strong>India Disaster Helpline:</strong> 1078</li>
+                        <li><strong>India Ambulance:</strong> 108</li>
+                        <li><strong>India Meteorological Department:</strong> 011-24631913</li>
+                        <li><strong>India National Disaster Response Force:</strong> 011-24363260</li>
+                        <li><strong>India Health Ministry Helpline:</strong> 1800-180-1104</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Storm Precautions -->
+        <div class="precaution-content" id="storm-precautions">
+            <div class="card">
+                <h2 class="card-title">Storm Safety Protocols</h2>
+
+                <div class="precaution-phases">
+                    <h3 class="phase-title">Before a Storm</h3>
+                    <ul class="precaution-list">
+                        <li>Secure outdoor objects that could blow away or cause damage.</li>
+                        <li>Remove dead or rotting trees and branches that could fall during a storm.</li>
+                        <li>Know your area's risk for different types of storms and stay informed about weather forecasts.</li>
+                        <li>Prepare an emergency kit with essentials like food, water, flashlights, and batteries.</li>
+                        <li>Have a family communication plan in case you are separated during the storm.</li>
+                    </ul>
+                </div>
+
+                <div class="precaution-phases">
+                    <h3 class="phase-title">During a Storm</h3>
+                    <ul class="precaution-list">
+                        <li>Stay indoors and away from windows during high winds or lightning.</li>
+                        <li>If you hear thunder, go indoors immediately. Lightning can strike up to 10 miles from rainfall.</li>
+                        <li>Avoid using electrical equipment and telephones during thunderstorms.</li>
+                        <li>If you are driving, pull over to a safe place away from trees and power lines.</li>
+                        <li>If flooding occurs, move to higher ground immediately and avoid walking or driving through floodwaters.</li>
+                    </ul>
+                </div>
+
+                <div class="precaution-phases">
+                    <h3 class="phase-title">After a Storm</h3>
+                    <ul class="precaution-list">
+                        <li>Stay away from storm-damaged areas to avoid hazards like downed power lines.</li>
+                        <li>Report downed power lines and broken gas lines immediately to the utility company.</li>
+                        <li>Use caution when entering buildings and watch for hidden damage.</li>
+                        <li>Document any property damage with photographs for insurance purposes.</li>
+                        <li>Check on neighbors, especially those who are elderly or have special needs.</li>
+                    </ul>
+                </div>
+
+                <div class="precaution-phases">
+                    <h3 class="phase-title">Emergency Numbers</h3>
+                    <ul class="precaution-list">
+                        <li><strong>Emergency Services:</strong> 911 (US) / 112 (EU) / 112 (India)</li>
+                        <li><strong>National Weather Service:</strong> 1-301-713-0622</li>
+                        <li><strong>FEMA Disaster Assistance:</strong> 1-800-621-3362</li>
+                        <li><strong>American Red Cross:</strong> 1-800-733-2767</li>
+                        <li><strong>Power Outage Reporting:</strong> Call your local utility company</li>
+                        <li><strong>India Disaster Helpline:</strong> 1078</li>
+                        <li><strong>India Meteorological Department:</strong> 011-24631913</li>
+                        <li><strong>India National Disaster Response Force:</strong> 011-24363260</li>
+                        <li><strong>India State Electricity Board:</strong> Contact your state's electricity board</li>
+                        <li><strong>India Police:</strong> 100</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PDF Generation Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="js/pdf-generator.js"></script>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            // Tab switching functionality
+            $('.disaster-tab').click(function() {
+                // Remove active class from all tabs and content
+                $('.disaster-tab').removeClass('active');
+                $('.precaution-content').removeClass('active');
+
+                // Add active class to clicked tab
+                $(this).addClass('active');
+
+                // Get the disaster type from data attribute
+                const disasterType = $(this).data('disaster');
+
+                // Show the corresponding content
+                $('#' + disasterType + '-precautions').addClass('active');
+            });
+
+            // Download button functionality
+            $('#downloadCurrentPrecautions').click(function(e) {
+                e.preventDefault();
+
+                // Get the active disaster type
+                const activeTab = $('.disaster-tab.active');
+                const disasterType = activeTab.data('disaster');
+
+                // Get the content element
+                const contentElement = document.getElementById(disasterType + '-precautions');
+
+                // Generate PDF
+                generatePrecautionsPDF(disasterType, contentElement);
+            });
+
+            // Logout functionality
+            $('#logoutBtn').click(function(e) {
+                e.preventDefault();
+                localStorage.removeItem('currentUserSession');
+                window.location.href = 'login.html';
+            });
+        });
+    </script>
+
+    <!-- Modern UI JavaScript -->
+    <script src="js/modern-ui.js"></script>
+
+</body>
+</html>

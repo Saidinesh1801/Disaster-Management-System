@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reset Storage</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #3498db;
+        }
+        .card {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 20px;
+            background-color: #f9f9f9;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .danger {
+            background-color: #e74c3c;
+        }
+        .danger:hover {
+            background-color: #c0392b;
+        }
+        .success {
+            background-color: #2ecc71;
+        }
+        .success:hover {
+            background-color: #27ae60;
+        }
+        .alert {
+            padding: 10px;
+            background-color: #d4edda;
+            color: #155724;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+        pre {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            overflow: auto;
+            max-height: 300px;
+        }
+    </style>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Storage utilities -->
+    <script src="js/storage-utils.js"></script>
+</head>
+<body>
+    <h1>Reset Storage Tool</h1>
+    
+    <div class="card">
+        <h2>Current Storage Status</h2>
+        <div id="storageStatus"></div>
+        <button id="refreshBtn" class="success">Refresh Status</button>
+    </div>
+    
+    <div class="card">
+        <h2>Reset Options</h2>
+        <p>Warning: These actions will reset your data and cannot be undone!</p>
+        
+        <button id="resetAlertsBtn" class="danger">Reset Registered Alerts</button>
+        <button id="clearAllBtn" class="danger">Clear All Storage</button>
+        <button id="initializeBtn">Initialize with Sample Data</button>
+    </div>
+    
+    <div class="card">
+        <h2>Sample Alert</h2>
+        <button id="createSampleAlertBtn">Create Sample Alert</button>
+        <div id="sampleAlertResult"></div>
+    </div>
+    
+    <div class="card">
+        <h2>Navigation</h2>
+        <p>Go to these pages to test your changes:</p>
+        <a href="alert.html"><button>Alert Page</button></a>
+        <a href="registered-alerts.html"><button>Registered Alerts</button></a>
+        <a href="insight.html"><button>Insights</button></a>
+    </div>
+    
+    <script>
+        // Sample alert data
+        const sampleAlerts = [
+            {
+                id: "SAMPLE-001",
+                disasterType: "Earthquake",
+                date: new Date().toISOString().split('T')[0],
+                location: "California, USA",
+                severity: "High",
+                affectedAreas: "Los Angeles, San Francisco",
+                status: "Active",
+                description: "Sample earthquake alert for testing",
+                reportedBy: "System",
+                timestamp: new Date().toISOString(),
+                evacuationOrders: "Evacuation recommended for coastal areas",
+                emergencyContacts: "Emergency Services: 911"
+            },
+            {
+                id: "SAMPLE-002",
+                disasterType: "Flood",
+                date: new Date().toISOString().split('T')[0],
+                location: "Florida, USA",
+                severity: "Medium",
+                affectedAreas: "Miami, Tampa",
+                status: "Active",
+                description: "Sample flood alert for testing",
+                reportedBy: "System",
+                timestamp: new Date().toISOString(),
+                evacuationOrders: "Stay on higher ground",
+                emergencyContacts: "Emergency Services: 911"
+            },
+            {
+                id: "SAMPLE-003",
+                disasterType: "Hurricane",
+                date: new Date().toISOString().split('T')[0],
+                location: "Texas, USA",
+                severity: "Critical",
+                affectedAreas: "Houston, Galveston",
+                status: "Active",
+                description: "Sample hurricane alert for testing",
+                reportedBy: "System",
+                timestamp: new Date().toISOString(),
+                evacuationOrders: "Mandatory evacuation for coastal areas",
+                emergencyContacts: "Emergency Services: 911"
+            }
+        ];
+        
+        // Function to update storage status display
+        function updateStorageStatus() {
+            const status = document.getElementById('storageStatus');
+            
+            // Get all localStorage keys
+            const keys = Object.keys(localStorage);
+            let html = '<h3>LocalStorage Keys:</h3>';
+            
+            if (keys.length === 0) {
+                html += '<p>No data in localStorage</p>';
+            } else {
+                html += '<ul>';
+                keys.forEach(key => {
+                    try {
+                        const value = localStorage.getItem(key);
+                        const parsed = JSON.parse(value);
+                        let displayValue;
+                        
+                        if (Array.isArray(parsed)) {
+                            displayValue = `Array with ${parsed.length} items`;
+                        } else if (typeof parsed === 'object') {
+                            displayValue = 'Object';
+                        } else {
+                            displayValue = parsed;
+                        }
+                        
+                        html += `<li><strong>${key}:</strong> ${displayValue}</li>`;
+                    } catch (e) {
+                        html += `<li><strong>${key}:</strong> (Not JSON data)</li>`;
+                    }
+                });
+                html += '</ul>';
+            }
+            
+            // Show registered alerts if they exist
+            const registeredAlerts = StorageUtils.loadData('registeredAlerts', []);
+            if (registeredAlerts.length > 0) {
+                html += `<h3>Registered Alerts (${registeredAlerts.length}):</h3>`;
+                html += '<pre>' + JSON.stringify(registeredAlerts, null, 2) + '</pre>';
+            }
+            
+            status.innerHTML = html;
+        }
+        
+        // Initialize
+        $(document).ready(function() {
+            // Update initial status
+            updateStorageStatus();
+            
+            // Refresh button
+            $('#refreshBtn').click(function() {
+                updateStorageStatus();
+            });
+            
+            // Reset alerts button
+            $('#resetAlertsBtn').click(function() {
+                if (confirm('Are you sure you want to reset all registered alerts? This cannot be undone!')) {
+                    StorageUtils.saveData('registeredAlerts', []);
+                    alert('Registered alerts have been reset.');
+                    updateStorageStatus();
+                }
+            });
+            
+            // Clear all storage button
+            $('#clearAllBtn').click(function() {
+                if (confirm('Are you sure you want to clear ALL localStorage data? This cannot be undone!')) {
+                    localStorage.clear();
+                    alert('All localStorage data has been cleared.');
+                    updateStorageStatus();
+                }
+            });
+            
+            // Initialize with sample data button
+            $('#initializeBtn').click(function() {
+                StorageUtils.saveData('registeredAlerts', sampleAlerts);
+                alert('Storage has been initialized with sample data.');
+                updateStorageStatus();
+            });
+            
+            // Create sample alert button
+            $('#createSampleAlertBtn').click(function() {
+                const alertId = 'SAMPLE-' + Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+                const disasterTypes = ['Earthquake', 'Flood', 'Hurricane', 'Tornado', 'Wildfire', 'Tsunami'];
+                const locations = ['California, USA', 'Florida, USA', 'Texas, USA', 'New York, USA', 'Tokyo, Japan', 'London, UK'];
+                const severities = ['Low', 'Medium', 'High', 'Critical'];
+                
+                const newAlert = {
+                    id: alertId,
+                    disasterType: disasterTypes[Math.floor(Math.random() * disasterTypes.length)],
+                    date: new Date().toISOString().split('T')[0],
+                    location: locations[Math.floor(Math.random() * locations.length)],
+                    severity: severities[Math.floor(Math.random() * severities.length)],
+                    affectedAreas: "Sample affected areas",
+                    status: "Active",
+                    description: "Sample alert created for testing",
+                    reportedBy: "Test User",
+                    timestamp: new Date().toISOString(),
+                    evacuationOrders: "Sample evacuation orders",
+                    emergencyContacts: "Emergency Services: 911"
+                };
+                
+                const success = StorageUtils.addToArray('registeredAlerts', newAlert);
+                
+                if (success) {
+                    $('#sampleAlertResult').html(`
+                        <div class="alert">
+                            Sample alert created successfully with ID: ${alertId}
+                        </div>
+                        <pre>${JSON.stringify(newAlert, null, 2)}</pre>
+                    `);
+                    updateStorageStatus();
+                } else {
+                    $('#sampleAlertResult').html(`
+                        <div class="alert" style="background-color: #f8d7da; color: #721c24;">
+                            Error creating sample alert
+                        </div>
+                    `);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

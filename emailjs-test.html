@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EmailJS Test - Disaster Management System</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .form-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .result-container {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .success {
+            color: #27ae60;
+        }
+        .error {
+            color: #e74c3c;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="home.html" class="logo">Disaster Management System</a>
+            <ul class="nav-links">
+                <li><a href="home.html">Home</a></li>
+                <li><a href="alert.html">Alerts</a></li>
+                <li><a href="registered-alerts.html">Registered Alerts</a></li>
+                <li><a href="occurred-disasters.html">Occurred Disasters</a></li>
+                <li><a href="insight.html">Insights</a></li>
+                <li><a href="precaution.html">Precautions</a></li>
+                <li><a href="email-logs.html">Email Logs</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="#" id="logoutBtn">Logout</a></li>
+                <li><span id="userWelcome" class="user-welcome"></span></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1 class="text-center">EmailJS Integration Test</h1>
+
+        <div class="card">
+            <h2 class="card-title">EmailJS Configuration</h2>
+            <p>Configure your EmailJS settings to send emails directly from the browser.</p>
+
+            <form id="configForm" class="form-container">
+                <div class="form-group">
+                    <label for="userId">EmailJS User ID:</label>
+                    <input type="text" id="userId" class="form-control" placeholder="Your EmailJS User ID" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="serviceId">EmailJS Service ID:</label>
+                    <input type="text" id="serviceId" class="form-control" placeholder="Your EmailJS Service ID" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="templateId">EmailJS Template ID:</label>
+                    <input type="text" id="templateId" class="form-control" placeholder="Your EmailJS Template ID" required>
+                </div>
+
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">Save Configuration</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="card mt-20">
+            <h2 class="card-title">Test Email</h2>
+            <p>Send a test email to verify your EmailJS configuration.</p>
+
+            <form id="testEmailForm" class="form-container">
+                <div class="form-group">
+                    <label for="recipientEmail">Recipient Email:</label>
+                    <input type="email" id="recipientEmail" class="form-control" placeholder="Recipient's email address" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="recipientName">Recipient Name:</label>
+                    <input type="text" id="recipientName" class="form-control" placeholder="Recipient's name">
+                </div>
+
+                <div class="form-group">
+                    <label for="emailSubject">Subject:</label>
+                    <input type="text" id="emailSubject" class="form-control" placeholder="Email subject" value="Test Email from Disaster Management System">
+                </div>
+
+                <div class="form-group">
+                    <label for="emailMessage">Message:</label>
+                    <textarea id="emailMessage" class="form-control" rows="4" placeholder="Email message">This is a test email from the Disaster Management System using EmailJS.</textarea>
+                </div>
+
+                <div class="form-group">
+                    <button type="submit" class="btn btn-danger">Send Test Email</button>
+                </div>
+            </form>
+
+            <div id="resultContainer" class="result-container hidden">
+                <h3 id="resultTitle">Result</h3>
+                <p id="resultMessage"></p>
+                <pre id="resultDetails"></pre>
+            </div>
+        </div>
+
+        <div class="card mt-20">
+            <h2 class="card-title">EmailJS Template Guide</h2>
+            <p>To use EmailJS with the Disaster Management System, create a template with the following variables:</p>
+
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Variable</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>to_email</td>
+                            <td>Recipient's email address</td>
+                        </tr>
+                        <tr>
+                            <td>to_name</td>
+                            <td>Recipient's name</td>
+                        </tr>
+                        <tr>
+                            <td>subject</td>
+                            <td>Email subject</td>
+                        </tr>
+                        <tr>
+                            <td>message</td>
+                            <td>Email message (HTML content)</td>
+                        </tr>
+                        <tr>
+                            <td>disaster_type</td>
+                            <td>Type of disaster (for alerts)</td>
+                        </tr>
+                        <tr>
+                            <td>severity</td>
+                            <td>Alert severity level</td>
+                        </tr>
+                        <tr>
+                            <td>regions</td>
+                            <td>Affected regions</td>
+                        </tr>
+                        <tr>
+                            <td>alert_id</td>
+                            <td>Unique alert identifier</td>
+                        </tr>
+                        <tr>
+                            <td>datetime</td>
+                            <td>Date and time of the alert</td>
+                        </tr>
+                        <tr>
+                            <td>emergency_contacts</td>
+                            <td>Emergency contact information (HTML formatted)</td>
+                        </tr>
+                        <tr>
+                            <td>evacuation_orders</td>
+                            <td>Evacuation orders or instructions</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include EmailJS Service -->
+    <script src="email.js"></script>
+    <script src="js/email-service.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check for existing configuration
+            const savedConfig = localStorage.getItem('emailJSConfig');
+            if (savedConfig) {
+                const config = JSON.parse(savedConfig);
+                document.getElementById('userId').value = config.userId || '';
+                document.getElementById('serviceId').value = config.serviceId || '';
+                document.getElementById('templateId').value = config.templateId || '';
+
+                // Update EmailJSService configuration
+                EmailJSService.config.userId = config.userId;
+                EmailJSService.config.serviceId = config.serviceId;
+                EmailJSService.config.templateId = config.templateId;
+
+                // Initialize EmailJS
+                EmailJSService.init();
+            }
+
+            // Handle configuration form submission
+            document.getElementById('configForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                const userId = document.getElementById('userId').value.trim();
+                const serviceId = document.getElementById('serviceId').value.trim();
+                const templateId = document.getElementById('templateId').value.trim();
+
+                // Save configuration to localStorage
+                const config = { userId, serviceId, templateId };
+                localStorage.setItem('emailJSConfig', JSON.stringify(config));
+
+                // Update EmailJSService configuration
+                EmailJSService.config.userId = userId;
+                EmailJSService.config.serviceId = serviceId;
+                EmailJSService.config.templateId = templateId;
+
+                // Initialize EmailJS
+                EmailJSService.init();
+
+                // Show success message
+                showResult(true, 'Configuration saved successfully!');
+            });
+
+            // Handle test email form submission
+            document.getElementById('testEmailForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+
+                const recipientEmail = document.getElementById('recipientEmail').value.trim();
+                const recipientName = document.getElementById('recipientName').value.trim();
+                const emailSubject = document.getElementById('emailSubject').value.trim();
+                const emailMessage = document.getElementById('emailMessage').value.trim();
+
+                // Show loading message
+                showResult(true, 'Sending email...', null, false);
+
+                try {
+                    // Send test email
+                    const response = await EmailJSService.sendEmail({
+                        to: recipientEmail,
+                        toName: recipientName,
+                        subject: emailSubject,
+                        body: emailMessage,
+                        onSuccess: (result) => {
+                            console.log('Email sent successfully:', result);
+                        },
+                        onError: (error) => {
+                            console.error('Failed to send email:', error);
+                        }
+                    });
+
+                    // Show success message
+                    showResult(true, 'Email sent successfully!', JSON.stringify(response, null, 2));
+                } catch (error) {
+                    // Show error message
+                    showResult(false, 'Failed to send email: ' + error.message, JSON.stringify(error, null, 2));
+                }
+            });
+
+            // Function to show result message
+            function showResult(success, message, details = null, isComplete = true) {
+                const resultContainer = document.getElementById('resultContainer');
+                const resultTitle = document.getElementById('resultTitle');
+                const resultMessage = document.getElementById('resultMessage');
+                const resultDetails = document.getElementById('resultDetails');
+
+                resultContainer.classList.remove('hidden');
+                resultTitle.textContent = isComplete ? (success ? 'Success' : 'Error') : 'Processing';
+                resultTitle.className = isComplete ? (success ? 'success' : 'error') : '';
+                resultMessage.textContent = message;
+                resultMessage.className = isComplete ? (success ? 'success' : 'error') : '';
+
+                if (details) {
+                    resultDetails.textContent = details;
+                    resultDetails.classList.remove('hidden');
+                } else {
+                    resultDetails.classList.add('hidden');
+                }
+            }
+
+            // Display welcome message if user is logged in
+            const userSession = localStorage.getItem('userSession');
+            if (userSession) {
+                const user = JSON.parse(userSession);
+                const userWelcome = document.getElementById('userWelcome');
+                if (userWelcome && user.fullname) {
+                    userWelcome.textContent = `Welcome, ${user.fullname}`;
+                }
+            }
+
+            // Handle logout
+            document.getElementById('logoutBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                localStorage.removeItem('userSession');
+                window.location.href = 'login.html';
+            });
+        });
+    </script>
+</body>
+</html>

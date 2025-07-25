@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Disaster Management System</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/modern-theme.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .login-page {
+            background: linear-gradient(135deg, #3498db, #2c3e50);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-page::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('https://images.unsplash.com/photo-1640236889592-99fdc210494d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjB8fGRpc2FzdGVyJTIwbWFuYWdlbWVudHxlbnwwfHwwfHx8MA%3D%3D') no-repeat center center;
+            background-size: cover;
+            opacity: 0.2;
+            z-index: -1;
+        }
+
+        .login-container {
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 10px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            width: 100%;
+            max-width: 450px;
+            padding: 0;
+            position: relative;
+            animation: fadeInUp 0.8s ease-out;
+            transform-origin: center bottom;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .login-header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 25px;
+            text-align: center;
+            position: relative;
+        }
+
+        .login-header h2 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .login-header p {
+            margin: 10px 0 0;
+            opacity: 0.8;
+            font-size: 14px;
+        }
+
+        .login-form {
+            padding: 30px;
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        .input-group i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #7f8c8d;
+            font-size: 18px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 15px 15px 15px 45px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+            background-color: #f9f9f9;
+        }
+
+        .input-group input:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 8px rgba(52, 152, 219, 0.5);
+            outline: none;
+            background-color: #fff;
+        }
+
+        .input-group input::placeholder {
+            color: #95a5a6;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus::placeholder {
+            opacity: 0.7;
+            transform: translateX(5px);
+        }
+
+        .remember-forgot {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+        }
+
+        .remember-me input {
+            margin-right: 8px;
+        }
+
+        .forgot-password {
+            color: #3498db;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s;
+        }
+
+        .forgot-password:hover {
+            color: #2980b9;
+            text-decoration: underline;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .login-btn:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 100%;
+            background-color: #2980b9;
+            transition: all 0.3s ease;
+            z-index: -1;
+        }
+
+        .login-btn:hover {
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .login-btn:hover:before {
+            width: 100%;
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .signup-link {
+            text-align: center;
+            margin-top: 25px;
+            font-size: 14px;
+        }
+
+        .signup-link a {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+
+        .signup-link a:hover {
+            color: #2980b9;
+            text-decoration: underline;
+        }
+
+        .home-link {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            color: white;
+            font-size: 14px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+
+        .home-link i {
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body class="login-page">
+    <div class="login-container">
+        <div class="login-header">
+            <a href="index.html" class="home-link"><i class="fas fa-home"></i> Home</a>
+            <h2>Welcome Back</h2>
+            <p>Enter your credentials to access the system</p>
+        </div>
+
+        <div class="login-form">
+            <form action="#" method="POST" id="loginForm">
+                <div class="input-group">
+                    <i class="fas fa-user"></i>
+                    <input type="text" id="username" name="username" placeholder="Username" required>
+                </div>
+
+                <div class="input-group">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" id="email" name="email" placeholder="Email Address" required>
+                </div>
+
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="password" name="password" placeholder="Password" required>
+                </div>
+
+                <div class="remember-forgot">
+                    <div class="remember-me">
+                        <input type="checkbox" id="remember" name="remember">
+                        <label for="remember">Remember me</label>
+                    </div>
+                    <a href="#" class="forgot-password" id="forgotPassword">Forgot Password?</a>
+                </div>
+
+                <button type="submit" class="login-btn" onclick="handleLogin(event)">Login</button>
+
+                <div class="signup-link">
+                    <p>Don't have an account? <a href="signup.html">Sign Up</a></p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Function to authenticate user
+        function authenticateUser(username, email, password) {
+            // Get registered users from localStorage
+            const users = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+
+            // Find user with matching credentials
+            return users.find(user =>
+                user.username.toLowerCase() === username.toLowerCase() &&
+                user.email.toLowerCase() === email.toLowerCase() &&
+                user.password === password
+            );
+        }
+
+        // Function to save active user session
+        function saveUserSession(user) {
+            // Get remember me preference
+            const rememberMe = document.getElementById('remember').checked;
+
+            // Create session object
+            const session = {
+                userId: user.id,
+                username: user.username,
+                email: user.email,
+                fullname: user.fullname,
+                loginTime: new Date().toISOString(),
+                active: true,
+                rememberMe: rememberMe
+            };
+
+            // Save to localStorage
+            localStorage.setItem('currentUserSession', JSON.stringify(session));
+
+            // Add to active users list
+            let activeUsers = JSON.parse(localStorage.getItem('activeUsers') || '[]');
+
+            // Remove any existing session for this user
+            activeUsers = activeUsers.filter(activeUser => activeUser.userId !== user.id);
+
+            // Add new session
+            activeUsers.push(session);
+
+            // Save back to localStorage
+            localStorage.setItem('activeUsers', JSON.stringify(activeUsers));
+
+            // If remember me is checked, save credentials in a separate storage
+            if (rememberMe) {
+                const rememberedUser = {
+                    username: user.username,
+                    email: user.email
+                };
+                localStorage.setItem('rememberedUser', JSON.stringify(rememberedUser));
+            } else {
+                // Clear remembered user if not checked
+                localStorage.removeItem('rememberedUser');
+            }
+
+            // Request notification permission for browser notifications
+            if ('Notification' in window) {
+                if (Notification.permission !== 'granted' && Notification.permission !== 'denied') {
+                    Notification.requestPermission();
+                }
+            }
+        }
+
+        // Function to check for remembered user on page load
+        function checkRememberedUser() {
+            const rememberedUser = JSON.parse(localStorage.getItem('rememberedUser') || 'null');
+            if (rememberedUser) {
+                document.getElementById('username').value = rememberedUser.username;
+                document.getElementById('email').value = rememberedUser.email;
+                document.getElementById('remember').checked = true;
+            }
+        }
+
+        // Login validation and authentication
+        function handleLogin(event) {
+            event.preventDefault();
+            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            if (!username || !email || !password) {
+                showNotification('Please fill in all fields', 'error');
+                return;
+            }
+
+            // Authenticate user
+            const user = authenticateUser(username, email, password);
+
+            if (user) {
+                // Save user session
+                saveUserSession(user);
+
+                // Show success message
+                showNotification('Login successful! Redirecting...', 'success');
+
+                // Redirect to home page after a short delay
+                setTimeout(() => {
+                    window.location.href = 'home.html';
+                }, 1000);
+            } else {
+                showNotification('Invalid credentials. Please check your username, email, and password.', 'error');
+            }
+        }
+
+        // Function to show notification
+        function showNotification(message, type = 'info') {
+            // Remove any existing notifications
+            const existingNotification = document.querySelector('.login-notification');
+            if (existingNotification) {
+                existingNotification.remove();
+            }
+
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `login-notification ${type}`;
+            notification.textContent = message;
+
+            // Add to page
+            document.querySelector('.login-form').prepend(notification);
+
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                notification.classList.add('fade-out');
+                setTimeout(() => {
+                    notification.remove();
+                }, 500);
+            }, 4500);
+        }
+
+        // Forgot password functionality
+        document.getElementById('forgotPassword').addEventListener('click', function(e) {
+            e.preventDefault();
+
+            // Get email from input field if available
+            let emailValue = document.getElementById('email').value;
+
+            // If email field is empty, prompt for email
+            if (!emailValue) {
+                emailValue = prompt('Enter your email address to reset your password:');
+            }
+
+            if (!emailValue) return;
+
+            // Check if email exists in registered users
+            const users = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+            const user = users.find(user => user.email.toLowerCase() === emailValue.toLowerCase());
+
+            if (user) {
+                showNotification('Password reset instructions have been sent to ' + emailValue, 'success');
+                // In a real application, this would trigger an email with reset instructions
+            } else {
+                showNotification('Email not found. Please check your email or sign up for an account.', 'error');
+            }
+        });
+
+        // Add notification styles
+        const style = document.createElement('style');
+        style.textContent = `
+            .login-notification {
+                padding: 12px;
+                margin-bottom: 20px;
+                border-radius: 5px;
+                text-align: center;
+                animation: fadeIn 0.3s ease;
+            }
+
+            .login-notification.success {
+                background-color: #d4edda;
+                color: #155724;
+                border: 1px solid #c3e6cb;
+            }
+
+            .login-notification.error {
+                background-color: #f8d7da;
+                color: #721c24;
+                border: 1px solid #f5c6cb;
+            }
+
+            .login-notification.info {
+                background-color: #d1ecf1;
+                color: #0c5460;
+                border: 1px solid #bee5eb;
+            }
+
+            .login-notification.fade-out {
+                opacity: 0;
+                transition: opacity 0.5s ease;
+            }
+
+            @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(-10px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Check for remembered user on page load
+        document.addEventListener('DOMContentLoaded', checkRememberedUser);
+    </script>
+
+    <!-- Modern UI JavaScript -->
+    <script src="js/modern-ui.js"></script>
+</body>
+</html>

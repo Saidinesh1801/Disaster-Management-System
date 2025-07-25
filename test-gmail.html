@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Gmail Integration - Disaster Management System</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"], input[type="email"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .btn:hover {
+            background-color: #2980b9;
+        }
+        #status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+            display: none;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info-box {
+            background-color: #e7f3fe;
+            border-left: 6px solid #2196F3;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(0,0,0,0.3);
+            border-radius: 50%;
+            border-top-color: #3498db;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Test Gmail Integration - Disaster Management System</h1>
+        
+        <div class="info-box">
+            <p>This page allows you to test if the Gmail integration is working correctly. It will send a test email directly from your Gmail account using the backend server.</p>
+        </div>
+        
+        <h2>Send Test Email</h2>
+        <form id="testForm">
+            <div class="form-group">
+                <label for="to_email">Recipient Email:</label>
+                <input type="email" id="to_email" name="to_email" placeholder="recipient@example.com" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="subject">Subject:</label>
+                <input type="text" id="subject" name="subject" value="Test Email from Disaster Management System" required>
+            </div>
+            
+            <button type="submit" class="btn">Send Test Email</button>
+        </form>
+        
+        <div id="status"></div>
+        
+        <div id="serverStatus" style="margin-top: 30px; padding: 15px; background-color: #f0f0f0; border-radius: 4px;">
+            <h3>Backend Server Status</h3>
+            <p id="serverStatusText">Checking server status...</p>
+            <button id="checkServerBtn" class="btn" style="margin-top: 10px;">Check Server Status</button>
+        </div>
+    </div>
+
+    <script>
+        // Check server status on page load
+        checkServerStatus();
+        
+        document.getElementById('checkServerBtn').addEventListener('click', function() {
+            checkServerStatus();
+        });
+        
+        function checkServerStatus() {
+            const statusText = document.getElementById('serverStatusText');
+            statusText.innerHTML = '<span class="loading"></span> Checking server status...';
+            
+            fetch('http://localhost:3000/api/health')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Server responded with status ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    statusText.innerHTML = `<span style="color: green;">✓</span> Server is running! Status: ${data.status}, Last checked: ${new Date().toLocaleTimeString()}`;
+                })
+                .catch(error => {
+                    statusText.innerHTML = `<span style="color: red;">✗</span> Server is not running or not accessible. Error: ${error.message}`;
+                });
+        }
+        
+        document.getElementById('testForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            const statusDiv = document.getElementById('status');
+            statusDiv.style.display = 'block';
+            statusDiv.innerHTML = '<span class="loading"></span> Sending test email...';
+            statusDiv.className = '';
+            
+            const toEmail = document.getElementById('to_email').value;
+            
+            // Send test email using the backend server
+            fetch(`http://localhost:3000/api/test-email?email=${encodeURIComponent(toEmail)}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Server responded with status ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        statusDiv.innerHTML = `
+                            <p><strong>Test email sent successfully!</strong></p>
+                            <p>Recipient: ${data.details.recipient}</p>
+                            <p>Message ID: ${data.details.messageId}</p>
+                            <p>Check your Gmail "Sent" folder to confirm the email was sent from your Gmail account.</p>
+                        `;
+                        statusDiv.className = 'success';
+                    } else {
+                        statusDiv.textContent = `Failed to send test email: ${data.message}`;
+                        statusDiv.className = 'error';
+                    }
+                })
+                .catch(error => {
+                    statusDiv.textContent = `Error: ${error.message}`;
+                    statusDiv.className = 'error';
+                });
+        });
+    </script>
+</body>
+</html>

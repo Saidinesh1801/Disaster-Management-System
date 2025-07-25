@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - Disaster Management System</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/modern-theme.css">
+    <link rel="stylesheet" href="css/page-enhancements.css">
+    <link rel="stylesheet" href="css/table-text-fix.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- Leaflet CSS for the map -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+</head>
+<body>
+    <!-- Session check script -->
+    <script>
+        // Check if user is logged in
+        function checkUserSession() {
+            const session = JSON.parse(localStorage.getItem('currentUserSession'));
+            if (!session || !session.active) {
+                alert('Please log in to access the system.');
+                window.location.href = 'login.html';
+            }
+            return session;
+        }
+
+        // Get current user session
+        const userSession = checkUserSession();
+    </script>
+
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="home.html" class="logo">Disaster Management System</a>
+            <button type="button" class="nav-toggle-btn" aria-label="Toggle navigation menu" title="Toggle Menu">
+                <i class="fas fa-bars"></i>
+            </button>
+            <ul class="nav-links">
+                <li><a href="home.html">Home</a></li>
+                <li><a href="alert.html">Alerts</a></li>
+                <li><a href="registered-alerts.html">Registered Alerts</a></li>
+                <li><a href="occurred-disasters.html">Occurred Disasters</a></li>
+                <li><a href="insight.html">Insights</a></li>
+                <li><a href="precaution.html">Precautions</a></li>
+                <li><a href="email-logs.html">Email Logs</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="#" id="logoutBtn">Logout</a></li>
+                <li><span id="userWelcome" class="user-welcome"></span></li>
+            </ul>
+        </div>
+    </nav>
+
+
+    <div class="container">
+        <h1 class="text-center">DISASTER MANAGEMENT SYSTEM</h1>
+
+        <div class="card">
+            <h2 class="card-title">Select Disaster Event</h2>
+            <div class="disaster-selection">
+                <div class="disaster-option" data-type="Earthquake">Earthquake</div>
+                <div class="disaster-option" data-type="Storm">Storm</div>
+                <div class="disaster-option" data-type="Flood">Flood</div>
+                <div class="disaster-option" data-type="Cyclone">Cyclone</div>
+                <div class="disaster-option" data-type="Drought">Drought</div>
+                <div class="disaster-option" data-type="Avalanche">Avalanche</div>
+                <div class="disaster-option" data-type="Wildfire">Wildfire</div>
+                <div class="disaster-option" data-type="Volcano">Volcano</div>
+                <div class="disaster-option" data-type="Hurricane">Hurricane</div>
+                <div class="disaster-option" data-type="Tsunami">Tsunami</div>
+                <div class="disaster-option" data-type="Tornado">Tornado</div>
+                <div class="disaster-option" data-type="Landslide">Landslide</div>
+                <div class="disaster-option" data-type="Blizzard">Blizzard</div>
+                <div class="disaster-option" data-type="Heatwave">Heatwave</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">World Map</h2>
+            <p>Select a disaster type above to view recent events on the map.</p>
+            <div id="map" class="map-container">
+                <div class="map-controls">
+                    <button type="button" id="zoomIn" class="btn btn-sm" title="Zoom In"><i class="fas fa-plus"></i></button>
+                    <button type="button" id="zoomOut" class="btn btn-sm" title="Zoom Out"><i class="fas fa-minus"></i></button>
+                    <button type="button" id="resetView" class="btn btn-sm" title="Reset View"><i class="fas fa-globe"></i></button>
+                </div>
+                <div class="map-legend">
+                    <div class="map-legend-title">Disaster Types</div>
+                    <div class="map-legend-item">
+                        <span class="map-legend-color" style="background-color: var(--earthquake);"></span>
+                        <span>Earthquake</span>
+                    </div>
+                    <div class="map-legend-item">
+                        <span class="map-legend-color" style="background-color: var(--flood);"></span>
+                        <span>Flood</span>
+                    </div>
+                    <div class="map-legend-item">
+                        <span class="map-legend-color" style="background-color: var(--hurricane);"></span>
+                        <span>Hurricane/Cyclone</span>
+                    </div>
+                    <div class="map-legend-item">
+                        <span class="map-legend-color" style="background-color: var(--wildfire);"></span>
+                        <span>Wildfire</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mt-20">
+            <h2 class="card-title">User Settings</h2>
+            <div class="quick-links">
+                <a href="user-preferences.html" class="btn">
+                    <i class="fas fa-cog"></i> Email Notification Preferences
+                </a>
+                <p class="mt-10">Configure your email notification settings to receive alerts about disasters in your regions of interest.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leaflet JS for the map -->
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+
+    <script>
+        // Initialize the map
+        const map = L.map('map').setView([20, 0], 2);
+
+        // Add the OpenStreetMap tiles
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        // Sample disaster data (in a real application, this would come from a database)
+        const disasterData = {
+            Earthquake: [
+                { lat: 37.7749, lng: -122.4194, magnitude: 6.5, location: "San Francisco, USA", date: "2023-05-15" },
+                { lat: 35.6762, lng: 139.6503, magnitude: 5.8, location: "Tokyo, Japan", date: "2023-06-22" },
+                { lat: -33.8688, lng: 151.2093, magnitude: 4.2, location: "Sydney, Australia", date: "2023-07-10" }
+            ],
+            Storm: [
+                { lat: 25.7617, lng: -80.1918, intensity: "Category 3", location: "Miami, USA", date: "2023-08-05" },
+                { lat: 18.9712, lng: 72.8063, intensity: "Severe", location: "Mumbai, India", date: "2023-07-25" }
+            ],
+            Flood: [
+                { lat: 51.5074, lng: -0.1278, severity: "Major", location: "London, UK", date: "2023-04-12" },
+                { lat: 23.8103, lng: 90.4125, severity: "Catastrophic", location: "Dhaka, Bangladesh", date: "2023-08-15" }
+            ],
+            Cyclone: [
+                { lat: 22.5726, lng: 88.3639, category: "Category 4", location: "Kolkata, India", date: "2023-05-28" },
+                { lat: -27.4698, lng: 153.0251, category: "Category 2", location: "Brisbane, Australia", date: "2023-03-10" }
+            ],
+            Drought: [
+                { lat: -1.2921, lng: 36.8219, severity: "Severe", location: "Nairobi, Kenya", date: "2023-01-15" },
+                { lat: 35.6897, lng: 51.3890, severity: "Moderate", location: "Tehran, Iran", date: "2023-06-01" }
+            ],
+            Avalanche: [
+                { lat: 45.9027, lng: 6.9702, severity: "Major", location: "Chamonix, France", date: "2023-02-12" },
+                { lat: 39.1911, lng: -106.8175, severity: "Moderate", location: "Aspen, USA", date: "2023-01-05" }
+            ],
+            Wildfire: [
+                { lat: 34.0522, lng: -118.2437, area: "50,000 acres", location: "Los Angeles, USA", date: "2023-07-20" },
+                { lat: -33.8688, lng: 151.2093, area: "30,000 acres", location: "New South Wales, Australia", date: "2023-01-15" }
+            ],
+            Volcano: [
+                { lat: 19.4069, lng: -155.2834, status: "Erupting", location: "Hawaii, USA", date: "2023-06-10" },
+                { lat: 14.0833, lng: 121.0000, status: "Warning", location: "Taal, Philippines", date: "2023-05-05" }
+            ],
+            Hurricane: [
+                { lat: 18.2208, lng: -66.5901, category: "Category 4", location: "Puerto Rico", date: "2023-08-20" },
+                { lat: 29.7604, lng: -95.3698, category: "Category 3", location: "Houston, USA", date: "2023-07-15" }
+            ],
+            Tsunami: [
+                { lat: 35.6762, lng: 139.6503, height: "5m", location: "Japan Coast", date: "2023-04-22" },
+                { lat: -6.2088, lng: 106.8456, height: "3m", location: "Jakarta, Indonesia", date: "2023-03-15" }
+            ],
+            Tornado: [
+                { lat: 35.4676, lng: -97.5164, category: "EF4", location: "Oklahoma City, USA", date: "2023-05-10" },
+                { lat: 41.8781, lng: -87.6298, category: "EF2", location: "Chicago, USA", date: "2023-06-15" }
+            ],
+            Landslide: [
+                { lat: 27.7172, lng: 85.3240, severity: "Major", location: "Kathmandu, Nepal", date: "2023-07-28" },
+                { lat: 6.9271, lng: 79.8612, severity: "Severe", location: "Colombo, Sri Lanka", date: "2023-05-22" }
+            ],
+            Blizzard: [
+                { lat: 40.7128, lng: -74.0060, snowfall: "30 inches", location: "New York, USA", date: "2023-01-25" },
+                { lat: 55.7558, lng: 37.6173, snowfall: "24 inches", location: "Moscow, Russia", date: "2023-02-10" }
+            ],
+            Heatwave: [
+                { lat: 31.2304, lng: 121.4737, temperature: "45°C", location: "Shanghai, China", date: "2023-07-15" },
+                { lat: 28.6139, lng: 77.2090, temperature: "48°C", location: "Delhi, India", date: "2023-06-10" }
+            ]
+        };
+
+        // Store markers to be able to remove them later
+        let markers = [];
+
+        // Function to display disaster data on the map
+        function displayDisasterOnMap(disasterType) {
+            // Clear existing markers
+            markers.forEach(marker => map.removeLayer(marker));
+            markers = [];
+
+            // Check if we have data for this disaster type
+            if (!disasterData[disasterType]) {
+                return;
+            }
+
+            // Add new markers for the selected disaster type
+            disasterData[disasterType].forEach(event => {
+                const marker = L.marker([event.lat, event.lng]).addTo(map);
+
+                // Create popup content based on disaster type
+                let popupContent = `<b>${disasterType} in ${event.location}</b><br>Date: ${event.date}<br>`;
+
+                // Add specific details based on disaster type
+                if (event.magnitude) popupContent += `Magnitude: ${event.magnitude}<br>`;
+                if (event.intensity) popupContent += `Intensity: ${event.intensity}<br>`;
+                if (event.severity) popupContent += `Severity: ${event.severity}<br>`;
+                if (event.category) popupContent += `Category: ${event.category}<br>`;
+                if (event.area) popupContent += `Affected Area: ${event.area}<br>`;
+                if (event.status) popupContent += `Status: ${event.status}<br>`;
+                if (event.height) popupContent += `Wave Height: ${event.height}<br>`;
+                if (event.snowfall) popupContent += `Snowfall: ${event.snowfall}<br>`;
+                if (event.temperature) popupContent += `Temperature: ${event.temperature}<br>`;
+
+                marker.bindPopup(popupContent);
+                markers.push(marker);
+            });
+        }
+
+        // Add click event listeners to disaster options
+        document.querySelectorAll('.disaster-option').forEach(option => {
+            option.addEventListener('click', function() {
+                // Remove active class from all options
+                document.querySelectorAll('.disaster-option').forEach(opt => {
+                    opt.classList.remove('active');
+                });
+
+                // Add active class to clicked option
+                this.classList.add('active');
+
+                // Display the selected disaster on the map
+                const disasterType = this.getAttribute('data-type');
+                displayDisasterOnMap(disasterType);
+            });
+        });
+
+        // Display welcome message with user's name
+        const userWelcome = document.getElementById('userWelcome');
+        if (userWelcome && userSession && userSession.fullname) {
+            userWelcome.textContent = `Welcome, ${userSession.fullname}`;
+        }
+
+        // Handle map controls
+        document.getElementById('zoomIn').addEventListener('click', function() {
+            map.zoomIn();
+        });
+
+        document.getElementById('zoomOut').addEventListener('click', function() {
+            map.zoomOut();
+        });
+
+        document.getElementById('resetView').addEventListener('click', function() {
+            map.setView([20, 0], 2);
+        });
+
+        // Custom marker icons for different disaster types
+        function getMarkerIcon(disasterType) {
+            let iconColor;
+
+            switch(disasterType) {
+                case 'Earthquake':
+                    iconColor = getComputedStyle(document.documentElement).getPropertyValue('--earthquake').trim();
+                    break;
+                case 'Flood':
+                    iconColor = getComputedStyle(document.documentElement).getPropertyValue('--flood').trim();
+                    break;
+                case 'Hurricane':
+                case 'Cyclone':
+                    iconColor = getComputedStyle(document.documentElement).getPropertyValue('--hurricane').trim();
+                    break;
+                case 'Wildfire':
+                    iconColor = getComputedStyle(document.documentElement).getPropertyValue('--wildfire').trim();
+                    break;
+                default:
+                    iconColor = getComputedStyle(document.documentElement).getPropertyValue('--primary-color').trim();
+            }
+
+            return L.divIcon({
+                className: 'custom-div-icon',
+                html: `<div style="background-color: ${iconColor}; width: 12px; height: 12px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 4px rgba(0,0,0,0.5);"></div>`,
+                iconSize: [16, 16],
+                iconAnchor: [8, 8]
+            });
+        }
+
+        // Update the displayDisasterOnMap function to use custom icons
+        function displayDisasterOnMap(disasterType) {
+            // Clear existing markers
+            markers.forEach(marker => map.removeLayer(marker));
+            markers = [];
+
+            // Check if we have data for this disaster type
+            if (!disasterData[disasterType]) {
+                return;
+            }
+
+            // Get custom icon for this disaster type
+            const icon = getMarkerIcon(disasterType);
+
+            // Add new markers for the selected disaster type
+            disasterData[disasterType].forEach(event => {
+                const marker = L.marker([event.lat, event.lng], { icon: icon }).addTo(map);
+
+                // Create popup content based on disaster type
+                let popupContent = `<b>${disasterType} in ${event.location}</b><br>Date: ${event.date}<br>`;
+
+                // Add specific details based on disaster type
+                if (event.magnitude) popupContent += `Magnitude: ${event.magnitude}<br>`;
+                if (event.intensity) popupContent += `Intensity: ${event.intensity}<br>`;
+                if (event.severity) popupContent += `Severity: ${event.severity}<br>`;
+                if (event.category) popupContent += `Category: ${event.category}<br>`;
+                if (event.area) popupContent += `Affected Area: ${event.area}<br>`;
+                if (event.status) popupContent += `Status: ${event.status}<br>`;
+                if (event.height) popupContent += `Wave Height: ${event.height}<br>`;
+                if (event.snowfall) popupContent += `Snowfall: ${event.snowfall}<br>`;
+                if (event.temperature) popupContent += `Temperature: ${event.temperature}<br>`;
+
+                marker.bindPopup(popupContent);
+                markers.push(marker);
+            });
+
+            // Fit map to markers if there are any
+            if (markers.length > 0) {
+                const group = new L.featureGroup(markers);
+                map.fitBounds(group.getBounds().pad(0.1));
+            }
+        }
+
+        // Handle logout
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                // Get user session
+                const userSession = JSON.parse(localStorage.getItem('currentUserSession'));
+
+                // Update session status
+                if (userSession) {
+                    // Mark session as inactive
+                    userSession.active = false;
+                    localStorage.setItem('currentUserSession', JSON.stringify(userSession));
+
+                    // Update active users list
+                    let activeUsers = JSON.parse(localStorage.getItem('activeUsers') || '[]');
+                    activeUsers = activeUsers.filter(user => user.userId !== userSession.userId);
+                    localStorage.setItem('activeUsers', JSON.stringify(activeUsers));
+                }
+
+                // Redirect to login page
+                window.location.href = 'index.html';
+            });
+        }
+    </script>
+
+    <!-- Modern UI JavaScript -->
+    <script src="js/modern-ui.js"></script>
+
+    <!-- Auto Fix Pending Emails -->
+    <script src="js/auto-fix-pending-emails.js"></script>
+
+</body>
+</html>

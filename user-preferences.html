@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Preferences - Disaster Management System</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/modern-theme.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- Select2 CSS for better multi-select dropdowns -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Select2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <!-- Fix for purple lines/outlines -->
+    <style>
+        select, input, textarea {
+            outline: none !important;
+        }
+        .select2-container--focus .select2-selection {
+            border-color: #3498db !important;
+            box-shadow: none !important;
+        }
+
+        /* Additional styles for user preferences page */
+        .preference-section {
+            margin-bottom: 30px;
+        }
+
+        .preference-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #3498db;
+        }
+
+        .preference-description {
+            margin-bottom: 15px;
+            color: #555;
+        }
+
+        .checkbox-group {
+            margin-bottom: 15px;
+        }
+
+        .checkbox-label {
+            margin-left: 8px;
+            cursor: pointer;
+        }
+
+        .region-selection {
+            margin-top: 15px;
+        }
+
+        .notification-type {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+
+        .notification-type:hover {
+            background-color: #f0f0f0;
+        }
+
+        .success-message {
+            display: none;
+            padding: 10px;
+            background-color: #d4edda;
+            color: #155724;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+
+        .profile-info {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .profile-info p {
+            margin: 5px 0;
+        }
+
+        .profile-info strong {
+            color: #3498db;
+        }
+    </style>
+</head>
+<body>
+    <!-- Session check script -->
+    <script>
+        // Check if user is logged in
+        function checkUserSession() {
+            const session = JSON.parse(localStorage.getItem('currentUserSession'));
+            if (!session || !session.active) {
+                window.location.href = 'login.html';
+            } else {
+                // Display user welcome message
+                const userWelcome = document.getElementById('userWelcome');
+                if (userWelcome) {
+                    userWelcome.textContent = `Welcome, ${session.user.fullname || session.user.username}`;
+                }
+
+                // Load user preferences
+                loadUserPreferences(session.user);
+            }
+        }
+
+        // Call the function when page loads
+        window.addEventListener('DOMContentLoaded', checkUserSession);
+    </script>
+
+    
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="home.html" class="logo">Disaster Management System</a>
+            <button type="button" class="nav-toggle-btn" aria-label="Toggle navigation menu" title="Toggle Menu">
+                <i class="fas fa-bars"></i>
+            </button>
+            <ul class="nav-links">
+                <li><a href="home.html">Home</a></li>
+                <li><a href="alert.html">Alerts</a></li>
+                <li><a href="registered-alerts.html">Registered Alerts</a></li>
+                <li><a href="occurred-disasters.html">Occurred Disasters</a></li>
+                <li><a href="insight.html">Insights</a></li>
+                <li><a href="precaution.html">Precautions</a></li>
+                <li><a href="email-logs.html">Email Logs</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="#" id="logoutBtn">Logout</a></li>
+                <li><span id="userWelcome" class="user-welcome"></span></li>
+            </ul>
+        </div>
+    </nav>
+
+
+    <div class="container">
+        <h1 class="text-center">User Preferences</h1>
+
+        <div id="successMessage" class="success-message">
+            <i class="fas fa-check-circle"></i> Your preferences have been saved successfully!
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">Profile Information</h2>
+            <div class="profile-info" id="profileInfo">
+                <!-- Profile information will be populated dynamically -->
+            </div>
+        </div>
+
+        <div class="card mt-20">
+            <h2 class="card-title">Email Notification Settings</h2>
+            <p>Configure how you receive email notifications about disasters and alerts.</p>
+
+            <form id="preferencesForm">
+                <div class="preference-section">
+                    <div class="preference-title">Notification Preferences</div>
+                    <div class="preference-description">Choose whether you want to receive email notifications about disasters and alerts.</div>
+
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="receiveAlerts" name="receiveAlerts">
+                        <label for="receiveAlerts" class="checkbox-label">Receive email alerts for disasters</label>
+                    </div>
+                </div>
+
+                <div class="preference-section">
+                    <div class="preference-title">Alert Types</div>
+                    <div class="preference-description">Select the types of disasters you want to be notified about.</div>
+
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="allAlertTypes" name="allAlertTypes">
+                        <label for="allAlertTypes" class="checkbox-label">All disaster types</label>
+                    </div>
+
+                    <div id="specificAlertTypes" class="mt-10">
+                        <div class="notification-type">
+                            <input type="checkbox" id="alertTypeEarthquake" name="alertTypes" value="Earthquake">
+                            <label for="alertTypeEarthquake" class="checkbox-label">Earthquake</label>
+                        </div>
+
+                        <div class="notification-type">
+                            <input type="checkbox" id="alertTypeFlood" name="alertTypes" value="Flood">
+                            <label for="alertTypeFlood" class="checkbox-label">Flood</label>
+                        </div>
+
+                        <div class="notification-type">
+                            <input type="checkbox" id="alertTypeHurricane" name="alertTypes" value="Hurricane">
+                            <label for="alertTypeHurricane" class="checkbox-label">Hurricane</label>
+                        </div>
+
+                        <div class="notification-type">
+                            <input type="checkbox" id="alertTypeTsunami" name="alertTypes" value="Tsunami">
+                            <label for="alertTypeTsunami" class="checkbox-label">Tsunami</label>
+                        </div>
+
+                        <div class="notification-type">
+                            <input type="checkbox" id="alertTypeWildfire" name="alertTypes" value="Wildfire">
+                            <label for="alertTypeWildfire" class="checkbox-label">Wildfire</label>
+                        </div>
+
+                        <div class="notification-type">
+                            <input type="checkbox" id="alertTypeTornado" name="alertTypes" value="Tornado">
+                            <label for="alertTypeTornado" class="checkbox-label">Tornado</label>
+                        </div>
+
+                        <div class="notification-type">
+                            <input type="checkbox" id="alertTypeDrought" name="alertTypes" value="Drought">
+                            <label for="alertTypeDrought" class="checkbox-label">Drought</label>
+                        </div>
+
+                        <div class="notification-type">
+                            <input type="checkbox" id="alertTypeVolcano" name="alertTypes" value="Volcano">
+                            <label for="alertTypeVolcano" class="checkbox-label">Volcanic Eruption</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="preference-section">
+                    <div class="preference-title">Regions of Interest</div>
+                    <div class="preference-description">Select the regions you want to receive alerts about.</div>
+
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="allRegions" name="allRegions">
+                        <label for="allRegions" class="checkbox-label">All regions</label>
+                    </div>
+
+                    <div class="region-selection">
+                        <select id="regions" class="form-control" multiple="multiple" aria-label="Regions of interest" title="Select regions you want to receive alerts about">
+                            <optgroup label="Countries">
+                                <option value="United States">United States</option>
+                                <option value="Canada">Canada</option>
+                                <option value="Mexico">Mexico</option>
+                                <option value="Brazil">Brazil</option>
+                                <option value="United Kingdom">United Kingdom</option>
+                                <option value="France">France</option>
+                                <option value="Germany">Germany</option>
+                                <option value="Italy">Italy</option>
+                                <option value="Spain">Spain</option>
+                                <option value="Russia">Russia</option>
+                                <option value="China">China</option>
+                                <option value="Japan">Japan</option>
+                                <option value="India">India</option>
+                                <option value="Australia">Australia</option>
+                                <option value="South Africa">South Africa</option>
+                            </optgroup>
+                            <optgroup label="US States">
+                                <option value="Alabama, USA">Alabama</option>
+                                <option value="Alaska, USA">Alaska</option>
+                                <option value="Arizona, USA">Arizona</option>
+                                <option value="California, USA">California</option>
+                                <option value="Colorado, USA">Colorado</option>
+                                <option value="Florida, USA">Florida</option>
+                                <option value="Hawaii, USA">Hawaii</option>
+                                <option value="New York, USA">New York</option>
+                                <option value="Texas, USA">Texas</option>
+                                <option value="Washington, USA">Washington</option>
+                            </optgroup>
+                            <optgroup label="Regions">
+                                <option value="North America">North America</option>
+                                <option value="South America">South America</option>
+                                <option value="Europe">Europe</option>
+                                <option value="Asia">Asia</option>
+                                <option value="Africa">Africa</option>
+                                <option value="Oceania">Oceania</option>
+                                <option value="Middle East">Middle East</option>
+                                <option value="Caribbean">Caribbean</option>
+                                <option value="Southeast Asia">Southeast Asia</option>
+                                <option value="Central America">Central America</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="preference-section">
+                    <div class="preference-title">Severity Levels</div>
+                    <div class="preference-description">Select the severity levels you want to be notified about.</div>
+
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="allSeverities" name="allSeverities">
+                        <label for="allSeverities" class="checkbox-label">All severity levels</label>
+                    </div>
+
+                    <div id="specificSeverities" class="mt-10">
+                        <div class="notification-type">
+                            <input type="checkbox" id="severityCritical" name="severities" value="Critical">
+                            <label for="severityCritical" class="checkbox-label">Critical</label>
+                        </div>
+
+                        <div class="notification-type">
+                            <input type="checkbox" id="severityHigh" name="severities" value="High">
+                            <label for="severityHigh" class="checkbox-label">High</label>
+                        </div>
+
+                        <div class="notification-type">
+                            <input type="checkbox" id="severityMedium" name="severities" value="Medium">
+                            <label for="severityMedium" class="checkbox-label">Medium</label>
+                        </div>
+
+                        <div class="notification-type">
+                            <input type="checkbox" id="severityLow" name="severities" value="Low">
+                            <label for="severityLow" class="checkbox-label">Low</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group text-center mt-20">
+                    <button type="submit" class="btn">Save Preferences</button>
+                    <button type="button" id="resetPreferences" class="btn btn-secondary">Reset to Defaults</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            // Initialize Select2 for regions dropdown
+            $('#regions').select2({
+                placeholder: "Select regions of interest",
+                allowClear: true
+            });
+
+            // Logout functionality
+            $('#logoutBtn').click(function(e) {
+                e.preventDefault();
+                localStorage.removeItem('currentUserSession');
+                window.location.href = 'login.html';
+            });
+
+            // Toggle specific alert types based on "All disaster types" checkbox
+            $('#allAlertTypes').change(function() {
+                const isChecked = $(this).is(':checked');
+                $('input[name="alertTypes"]').prop('checked', isChecked);
+                $('#specificAlertTypes').css('opacity', isChecked ? '0.5' : '1');
+                $('input[name="alertTypes"]').prop('disabled', isChecked);
+            });
+
+            // Toggle specific regions based on "All regions" checkbox
+            $('#allRegions').change(function() {
+                const isChecked = $(this).is(':checked');
+                if (isChecked) {
+                    $('#regions').val(null).trigger('change');
+                }
+                $('#regions').prop('disabled', isChecked);
+                $('.region-selection').css('opacity', isChecked ? '0.5' : '1');
+            });
+
+            // Toggle specific severities based on "All severity levels" checkbox
+            $('#allSeverities').change(function() {
+                const isChecked = $(this).is(':checked');
+                $('input[name="severities"]').prop('checked', isChecked);
+                $('#specificSeverities').css('opacity', isChecked ? '0.5' : '1');
+                $('input[name="severities"]').prop('disabled', isChecked);
+            });
+
+            // Form submission
+            $('#preferencesForm').submit(function(e) {
+                e.preventDefault();
+
+                // Get current user session
+                const session = JSON.parse(localStorage.getItem('currentUserSession'));
+                if (!session || !session.active) {
+                    alert('You must be logged in to save preferences.');
+                    return;
+                }
+
+                // Get form values
+                const receiveAlerts = $('#receiveAlerts').is(':checked');
+                const allAlertTypes = $('#allAlertTypes').is(':checked');
+                const allRegions = $('#allRegions').is(':checked');
+                const allSeverities = $('#allSeverities').is(':checked');
+
+                // Get selected alert types
+                let alertTypes = [];
+                if (allAlertTypes) {
+                    alertTypes = ['All'];
+                } else {
+                    $('input[name="alertTypes"]:checked').each(function() {
+                        alertTypes.push($(this).val());
+                    });
+                }
+
+                // Get selected regions
+                let regions = [];
+                if (allRegions) {
+                    regions = ['All'];
+                } else {
+                    regions = $('#regions').val() || [];
+                }
+
+                // Get selected severities
+                let severities = [];
+                if (allSeverities) {
+                    severities = ['All'];
+                } else {
+                    $('input[name="severities"]:checked').each(function() {
+                        severities.push($(this).val());
+                    });
+                }
+
+                // Create preferences object
+                const preferences = {
+                    receiveAlerts: receiveAlerts,
+                    alertTypes: alertTypes,
+                    regions: regions,
+                    severities: severities,
+                    lastUpdated: new Date().toISOString()
+                };
+
+                // Update user preferences in localStorage
+                const users = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+                const userIndex = users.findIndex(user => user.id === session.user.id);
+
+                if (userIndex !== -1) {
+                    users[userIndex].preferences = preferences;
+                    localStorage.setItem('registeredUsers', JSON.stringify(users));
+
+                    // Update session with new preferences
+                    session.user.preferences = preferences;
+                    localStorage.setItem('currentUserSession', JSON.stringify(session));
+
+                    // Show success message
+                    $('#successMessage').fadeIn().delay(3000).fadeOut();
+                } else {
+                    alert('Error: User not found.');
+                }
+            });
+
+            // Reset preferences to defaults
+            $('#resetPreferences').click(function() {
+                if (confirm('Are you sure you want to reset all preferences to default values?')) {
+                    // Set default values
+                    $('#receiveAlerts').prop('checked', true);
+                    $('#allAlertTypes').prop('checked', true).trigger('change');
+                    $('#allRegions').prop('checked', true).trigger('change');
+                    $('#allSeverities').prop('checked', true).trigger('change');
+                }
+            });
+        });
+
+        // Function to load user preferences
+        function loadUserPreferences(user) {
+            // Populate profile information
+            const profileInfo = document.getElementById('profileInfo');
+            if (profileInfo) {
+                profileInfo.innerHTML = `
+                    <p><strong>Name:</strong> ${user.fullname || 'Not provided'}</p>
+                    <p><strong>Username:</strong> ${user.username}</p>
+                    <p><strong>Email:</strong> ${user.email}</p>
+                    <p><strong>Account Created:</strong> ${new Date(user.dateRegistered).toLocaleDateString()}</p>
+                `;
+            }
+
+            // Get user preferences
+            const preferences = user.preferences || {
+                receiveAlerts: true,
+                alertTypes: ['All'],
+                regions: ['All'],
+                severities: ['All']
+            };
+
+            // Set form values based on preferences
+            $('#receiveAlerts').prop('checked', preferences.receiveAlerts);
+
+            // Set alert types
+            const hasAllAlertTypes = preferences.alertTypes.includes('All');
+            $('#allAlertTypes').prop('checked', hasAllAlertTypes).trigger('change');
+
+            if (!hasAllAlertTypes) {
+                preferences.alertTypes.forEach(type => {
+                    $(`#alertType${type}`).prop('checked', true);
+                });
+            }
+
+            // Set regions
+            const hasAllRegions = preferences.regions.includes('All');
+            $('#allRegions').prop('checked', hasAllRegions).trigger('change');
+
+            if (!hasAllRegions && preferences.regions.length > 0) {
+                $('#regions').val(preferences.regions).trigger('change');
+            }
+
+            // Set severities
+            const hasAllSeverities = preferences.severities.includes('All');
+            $('#allSeverities').prop('checked', hasAllSeverities).trigger('change');
+
+            if (!hasAllSeverities) {
+                preferences.severities.forEach(severity => {
+                    $(`#severity${severity}`).prop('checked', true);
+                });
+            }
+        }
+    </script>
+
+    <!-- Modern UI JavaScript -->
+    <script src="js/modern-ui.js"></script>
+
+</body>
+</html>

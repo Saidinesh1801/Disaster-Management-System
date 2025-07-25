@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - Disaster Management System</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/modern-theme.css">
+    <link rel="stylesheet" href="css/table-text-fix.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .feature-card {
+            display: flex;
+            margin-bottom: 20px;
+            align-items: flex-start;
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            color: #3498db;
+            margin-right: 20px;
+            min-width: 40px;
+        }
+
+        .feature-content {
+            flex: 1;
+        }
+
+        .feature-content h3 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+
+        .tech-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .tech-item {
+            background-color: #f1f1f1;
+            padding: 10px 15px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+    </style>
+    <!-- Navigation Menu Enhancement -->
+    <script src="js/nav-menu.js"></script>
+
+    <style>
+        /* Navigation styles for dropdown menu */
+        .navbar {
+            position: relative;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            justify-content: flex-start;
+        }
+
+        .nav-item {
+            position: relative;
+            height: 100%;
+        }
+
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            padding: 0 15px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .nav-link:hover {
+            background-color: #34495e;
+        }
+
+        /* Horizontal menu at the top */
+        .dropdown {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background-color: #34495e;
+            display: none;
+            z-index: 999;
+            border: none;
+            outline: none;
+            padding: 10px 0;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+
+        .nav-item.active .dropdown {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 10px 20px;
+        }
+
+        /* Dropdown item styles */
+        .dropdown a {
+            color: white;
+            padding: 8px 16px;
+            text-decoration: none;
+            display: inline-block;
+            border: none;
+            outline: none;
+            background-color: transparent;
+            border-radius: 4px;
+            margin: 0 5px;
+        }
+
+        .dropdown a:hover {
+            background-color: #2c3e50;
+            color: #3498db;
+        }
+
+        .user-section {
+            color: white;
+        }
+
+        /* Mobile navigation */
+        .nav-toggle-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .nav-toggle-btn {
+                display: block;
+            }
+
+            .nav-menu {
+                position: absolute;
+                top: 60px;
+                left: 0;
+                right: 0;
+                background-color: #2c3e50;
+                flex-direction: column;
+                display: none;
+            }
+
+            .navbar.mobile-open .nav-menu {
+                display: flex;
+                flex-direction: column;
+            }
+
+            .nav-item {
+                width: 100%;
+            }
+
+            .nav-link {
+                width: 100%;
+                padding: 15px;
+            }
+
+            .dropdown {
+                position: static;
+                box-shadow: none;
+                width: 100%;
+                background-color: #34495e;
+                display: none;
+                flex-direction: column;
+                padding: 0;
+            }
+
+            .nav-item.active .dropdown {
+                display: flex;
+            }
+
+            .dropdown a {
+                padding: 10px 30px;
+                margin: 0;
+                display: block;
+                text-align: left;
+                border-radius: 0;
+            }
+        }
+
+        /* Main content adjustment */
+        .container {
+            margin-top: 100px;
+        }
+    </style>
+    <!-- Fix for purple lines/outlines -->
+    <link rel="stylesheet" href="css/fix-purple-lines.css">
+
+</head>
+<body>
+
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="home.html" class="logo">Disaster Management System</a>
+            <button type="button" class="nav-toggle-btn" aria-label="Toggle navigation menu" title="Toggle Menu">
+                <i class="fas fa-bars"></i>
+            </button>
+            <ul class="nav-links">
+                <li><a href="home.html">Home</a></li>
+                <li><a href="alert.html">Alerts</a></li>
+                <li><a href="registered-alerts.html">Registered Alerts</a></li>
+                <li><a href="occurred-disasters.html">Occurred Disasters</a></li>
+                <li><a href="insight.html">Insights</a></li>
+                <li><a href="precaution.html">Precautions</a></li>
+                <li><a href="email-logs.html">Email Logs</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="#" id="logoutBtn">Logout</a></li>
+                <li><span id="userWelcome" class="user-welcome"></span></li>
+            </ul>
+        </div>
+    </nav>
+
+
+
+    <div class="container">
+        <h1 class="text-center">About the Disaster Management System</h1>
+
+        <div class="card">
+            <h2 class="card-title">What is the Disaster Management System?</h2>
+            <p>The Disaster Management System (DMS) is a comprehensive platform designed to monitor, track, analyze, and respond to natural disasters worldwide. Our system provides real-time information about various disaster events, helps authorities send timely alerts to affected populations, and offers valuable insights and precautionary measures to minimize the impact of disasters.</p>
+
+            <p>Our mission is to leverage technology to save lives and reduce the devastating effects of natural disasters through better preparation, timely warnings, and effective response coordination.</p>
+        </div>
+
+        <div class="card mt-20">
+            <h2 class="card-title">Key Features</h2>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-map-marked-alt"></i>
+                </div>
+                <div class="feature-content">
+                    <h3>Interactive Disaster Mapping</h3>
+                    <p>Our system provides an interactive world map that displays real-time information about various disaster events. Users can select specific disaster types to view their distribution and impact across different regions.</p>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-bell"></i>
+                </div>
+                <div class="feature-content">
+                    <h3>Alert System</h3>
+                    <p>The DMS includes a sophisticated alert system that allows authorities to send timely warnings to populations in affected areas. Alerts can be customized based on disaster type, severity, and geographic location.</p>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="feature-content">
+                    <h3>Data Analytics and Insights</h3>
+                    <p>Our platform analyzes historical disaster data to provide valuable insights about disaster patterns, frequency, and impact. These insights help in better disaster preparedness and resource allocation.</p>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <div class="feature-content">
+                    <h3>Precautionary Measures</h3>
+                    <p>The system offers comprehensive safety protocols and precautionary measures for different types of disasters, helping individuals and communities prepare for and respond to emergency situations.</p>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-download"></i>
+                </div>
+                <div class="feature-content">
+                    <h3>Downloadable Resources</h3>
+                    <p>Users can download detailed information about disaster events, safety protocols, and precautionary measures for offline access and distribution.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mt-20">
+            <h2 class="card-title">Data Sources</h2>
+            <p>Our system aggregates data from multiple reliable sources to provide accurate and up-to-date information about disaster events worldwide:</p>
+            <ul>
+                <li>National Oceanic and Atmospheric Administration (NOAA)</li>
+                <li>United States Geological Survey (USGS)</li>
+                <li>Global Disaster Alert and Coordination System (GDACS)</li>
+                <li>European Centre for Medium-Range Weather Forecasts (ECMWF)</li>
+                <li>National Aeronautics and Space Administration (NASA) Earth Observatory</li>
+                <li>World Meteorological Organization (WMO)</li>
+                <li>Local meteorological departments and disaster management agencies</li>
+            </ul>
+        </div>
+
+        <div class="card mt-20">
+            <h2 class="card-title">Technologies Used</h2>
+            <p>The Disaster Management System is built using modern web technologies to ensure reliability, scalability, and user-friendliness:</p>
+
+            <div class="tech-list">
+                <div class="tech-item">HTML5</div>
+                <div class="tech-item">CSS3</div>
+                <div class="tech-item">JavaScript</div>
+                <div class="tech-item">Leaflet.js</div>
+                <div class="tech-item">Chart.js</div>
+                <div class="tech-item">jQuery</div>
+                <div class="tech-item">Select2</div>
+                <div class="tech-item">Font Awesome</div>
+                <div class="tech-item">Responsive Design</div>
+                <div class="tech-item">RESTful APIs</div>
+                <div class="tech-item">GeoJSON</div>
+            </div>
+        </div>
+    </div>
+
+    <footer style="background-color: #2c3e50; color: white; padding: 20px 0; margin-top: 40px; text-align: center;">
+        <div class="container">
+            <p>&copy; 2023 Disaster Management System. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Dropdown Menu Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Dropdown menu functionality
+            const navLinks = document.querySelectorAll('.nav-link');
+
+            navLinks.forEach(link => {
+                // Only add click handler to links that have dropdown menus
+                const parent = link.parentElement;
+                const dropdown = parent.querySelector('.dropdown');
+
+                if (dropdown) {
+                    link.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+
+                        // Check if already active
+                        const isActive = parent.classList.contains('active');
+
+                        // Close all dropdowns first
+                        document.querySelectorAll('.nav-item').forEach(item => {
+                            item.classList.remove('active');
+                        });
+
+                        // If it wasn't active before, make it active now
+                        if (!isActive) {
+                            parent.classList.add('active');
+                        }
+                    });
+                }
+            });
+
+            // Close dropdowns when clicking outside or on dropdown items
+            document.addEventListener('click', function(e) {
+                // Close when clicking outside nav-item
+                if (!e.target.closest('.nav-item')) {
+                    document.querySelectorAll('.nav-item').forEach(item => {
+                        item.classList.remove('active');
+                    });
+                }
+
+                // Close when clicking on a dropdown item (a link inside dropdown)
+                if (e.target.closest('.dropdown a')) {
+                    document.querySelectorAll('.nav-item').forEach(item => {
+                        item.classList.remove('active');
+                    });
+                }
+            });
+
+            // Mobile menu toggle
+            const toggleBtn = document.querySelector('.nav-toggle-btn');
+            const navbar = document.querySelector('.navbar');
+
+            if (toggleBtn) {
+                toggleBtn.addEventListener('click', function() {
+                    navbar.classList.toggle('mobile-open');
+
+                    // Change icon based on state
+                    if (navbar.classList.contains('mobile-open')) {
+                        this.innerHTML = '<i class="fas fa-times"></i>';
+                    } else {
+                        this.innerHTML = '<i class="fas fa-bars"></i>';
+                    }
+                });
+            }
+
+            // Display welcome message with user's name
+            const userWelcome = document.getElementById('userWelcome');
+            if (userWelcome) {
+                const userSession = JSON.parse(localStorage.getItem('currentUserSession'));
+                if (userSession && userSession.fullname) {
+                    userWelcome.textContent = `Welcome, ${userSession.fullname}`;
+                }
+            }
+
+            // Handle logout
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+
+                    // Get user session
+                    const userSession = JSON.parse(localStorage.getItem('currentUserSession'));
+
+                    // Update session status
+                    if (userSession) {
+                        // Mark session as inactive
+                        userSession.active = false;
+                        localStorage.setItem('currentUserSession', JSON.stringify(userSession));
+
+                        // Update active users list
+                        let activeUsers = JSON.parse(localStorage.getItem('activeUsers') || '[]');
+                        activeUsers = activeUsers.filter(user => user.userId !== userSession.userId);
+                        localStorage.setItem('activeUsers', JSON.stringify(activeUsers));
+                    }
+
+                    // Redirect to login page
+                    window.location.href = 'index.html';
+                });
+            }
+        });
+    </script>
+
+
+    <!-- Modern UI JavaScript -->
+    <script src="js/modern-ui.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,1627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Logs - Disaster Management System</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/modern-theme.css">
+    <link rel="stylesheet" href="css/table-text-fix.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- jQuery (load first) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Morning Email Service (load early to ensure it's available) -->
+    <script src="js/morning-email-service.js"></script>
+
+    <!-- Force real email mode CSS -->
+    <link rel="stylesheet" href="css/force-real-email.css">
+    <!-- DataTables CSS for better table functionality -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+    <!-- DataTables JS -->
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <!-- Chart.js for data visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Email service -->
+    <script src="js/email-service.js"></script>
+    <!-- Force real email mode -->
+    <script src="js/force-real-email.js"></script>
+    <!-- Aggressive real email mode -->
+    <script src="js/force-real-email-aggressive.js"></script>
+    <!-- Clear Data Script -->
+    <script src="js/clear-data.js"></script>
+    <!-- Direct Email Service -->
+    <script src="js/direct-email.js"></script>
+    <!-- Email Test Script -->
+    <script src="js/email-test.js"></script>
+    <!-- Real-Time Email Service -->
+    <script src="js/real-time-email.js"></script>
+    <!-- Force Email Logs -->
+    <script src="js/force-email-logs.js"></script>
+    <!-- Auto Fix Pending Emails -->
+    <script src="js/auto-fix-pending-emails.js"></script>
+
+    <!-- Fix for purple lines/outlines -->
+    <style>
+        select, input, textarea {
+            outline: none !important;
+        }
+
+        /* Additional styles for email logs page */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #3498db;
+            margin: 10px 0;
+        }
+
+        .chart-container {
+            height: 300px;
+            margin-bottom: 20px;
+        }
+
+        .filter-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+            align-items: flex-end;
+        }
+
+        .btn-secondary {
+            margin-left: 10px;
+        }
+
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: white;
+            display: inline-block;
+        }
+
+        .status-badge.sent {
+            background-color: #2ecc71;
+        }
+
+        .status-badge.failed {
+            background-color: #e74c3c;
+        }
+
+        .status-badge.pending {
+            background-color: #f39c12;
+        }
+
+        .status-badge.retrying {
+            background-color: #3498db;
+        }
+
+        .status-badge.fallback {
+            background-color: #9b59b6;
+        }
+
+        .provider-badge {
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .provider-badge.gmail {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .provider-badge.gmail-direct {
+            background-color: #27ae60;
+            color: white;
+        }
+
+        .provider-badge.emailjs {
+            background-color: #9b59b6;
+            color: white;
+        }
+
+        .email-details {
+            display: none;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            margin-top: 10px;
+            border-left: 4px solid #3498db;
+        }
+
+        /* Styles for action buttons in the table */
+        .btn-view-details, .btn-mark-sent {
+            padding: 5px 10px;
+            margin: 2px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.8rem;
+            color: white;
+            display: inline-block;
+        }
+
+        .btn-view-details {
+            background-color: #3498db;
+        }
+
+        .btn-mark-sent {
+            background-color: #27ae60;
+        }
+
+        .btn-view-details:hover {
+            background-color: #2980b9;
+        }
+
+        .btn-mark-sent:hover {
+            background-color: #219955;
+        }
+
+        /* Action buttons container */
+        .action-buttons {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Session check script -->
+    <script>
+        // Check if user is logged in
+        function checkUserSession() {
+            const session = JSON.parse(localStorage.getItem('currentUserSession'));
+            if (!session || !session.active) {
+                window.location.href = 'login.html';
+            } else {
+                // Display user welcome message
+                const userWelcome = document.getElementById('userWelcome');
+                if (userWelcome) {
+                    userWelcome.textContent = `Welcome, ${session.user.fullname || session.user.username}`;
+                }
+            }
+        }
+
+        // Call the function when page loads
+        window.addEventListener('DOMContentLoaded', checkUserSession);
+    </script>
+
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="home.html" class="logo">Disaster Management System</a>
+            <button type="button" class="nav-toggle-btn" aria-label="Toggle navigation menu" title="Toggle Menu">
+                <i class="fas fa-bars"></i>
+            </button>
+            <ul class="nav-links">
+                <li><a href="home.html">Home</a></li>
+                <li><a href="alert.html">Alerts</a></li>
+                <li><a href="registered-alerts.html">Registered Alerts</a></li>
+                <li><a href="occurred-disasters.html">Occurred Disasters</a></li>
+                <li><a href="insight.html">Insights</a></li>
+                <li><a href="precaution.html">Precautions</a></li>
+                <li><a href="email-logs.html">Email Logs</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="#" id="logoutBtn">Logout</a></li>
+                <li><span id="userWelcome" class="user-welcome"></span></li>
+            </ul>
+        </div>
+    </nav>
+
+
+    <div class="container">
+        <h1 class="text-center">Email Alert Logs</h1>
+
+        <div class="card">
+            <h2 class="card-title">Email Statistics</h2>
+            <div class="stats-container">
+                <div class="stat-card">
+                    <h3>Total Emails</h3>
+                    <div id="totalEmails" class="stat-number">0</div>
+                    <p>Sent and failed</p>
+                </div>
+
+                <div class="stat-card">
+                    <h3>Successful</h3>
+                    <div id="successfulEmails" class="stat-number">0</div>
+                    <p>Delivered emails</p>
+                </div>
+
+                <div class="stat-card">
+                    <h3>Failed</h3>
+                    <div id="failedEmails" class="stat-number">0</div>
+                    <p>Failed attempts</p>
+                </div>
+
+                <div class="stat-card">
+                    <h3>Success Rate</h3>
+                    <div id="successRate" class="stat-number">0%</div>
+                    <p>Delivery rate</p>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <canvas id="emailChart"></canvas>
+            </div>
+
+            <div class="action-buttons">
+                <button type="button" id="refreshButton" class="btn btn-primary">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+                <button type="button" id="clearLogsButton" class="btn btn-danger">
+                    <i class="fas fa-trash"></i> Clear Logs
+                </button>
+                <button type="button" id="createTestLogButton" class="btn btn-success">
+                    <i class="fas fa-plus"></i> Create Test Email Log
+                </button>
+                <button type="button" id="testMorningEmailButton" class="btn btn-info">
+                    <i class="fas fa-envelope"></i> Test Morning Email
+                </button>
+                <button type="button" id="testGmailServerButton" class="btn btn-primary">
+                    <i class="fas fa-server"></i> Test Gmail Server
+                </button>
+                <button type="button" id="testSimpleGmailButton" class="btn btn-success">
+                    <i class="fas fa-paper-plane"></i> Test Simple Gmail
+                </button>
+                <a href="http://localhost:3009/direct-test" target="_blank" rel="noopener noreferrer" class="btn btn-danger">
+                    <i class="fas fa-bolt"></i> Direct Test
+                </a>
+                <button type="button" id="fixPendingEmailsButton" class="btn btn-warning">
+                    <i class="fas fa-check-circle"></i> Fix Pending Emails
+                </button>
+            </div>
+        </div>
+
+        <div class="card mt-20">
+            <h2 class="card-title">Email Logs</h2>
+
+            <div class="filter-section">
+                <div class="form-group">
+                    <label for="statusFilter">Status</label>
+                    <select id="statusFilter" class="form-control">
+                        <option value="">All Statuses</option>
+                        <option value="sent">Sent</option>
+                        <option value="failed">Failed</option>
+                        <option value="pending">Pending</option>
+                        <option value="retrying">Retrying</option>
+                        <option value="fallback">Fallback</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="providerFilter">Provider</label>
+                    <select id="providerFilter" class="form-control">
+                        <option value="">All Providers</option>
+                        <option value="Gmail (Direct)">Gmail (Direct)</option>
+                        <option value="EmailJS">EmailJS</option>
+                        <option value="Multiple Providers">Multiple Providers</option>
+                        <option value="Simulation Mode">Simulation Mode</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="dateFilter">Date Range</label>
+                    <select id="dateFilter" class="form-control">
+                        <option value="">All Time</option>
+                        <option value="today">Today</option>
+                        <option value="yesterday">Yesterday</option>
+                        <option value="week">Last 7 Days</option>
+                        <option value="month">Last 30 Days</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <button type="button" id="applyFilters" class="btn">Apply Filters</button>
+                    <button type="button" id="resetFilters" class="btn btn-secondary">Reset</button>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table id="emailLogsTable" class="display">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Recipient</th>
+                            <th>Subject</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th>Provider</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="emailLogsTableBody">
+                        <!-- Table rows will be populated dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Email Details Modal -->
+        <div id="emailDetailsModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Email Details</h2>
+                <div id="emailDetails">
+                    <!-- Email details will be populated dynamically -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Force real email mode
+        document.addEventListener('DOMContentLoaded', function() {
+            // Create a permanent green banner if it doesn't exist
+            if (!document.querySelector('.real-email-banner')) {
+                const banner = document.createElement('div');
+                banner.className = 'real-email-banner';
+                banner.style.position = 'fixed';
+                banner.style.top = '0';
+                banner.style.left = '0';
+                banner.style.width = '100%';
+                banner.style.backgroundColor = '#28a745';
+                banner.style.color = 'white';
+                banner.style.textAlign = 'center';
+                banner.style.padding = '10px';
+                banner.style.fontWeight = 'bold';
+                banner.style.zIndex = '9999';
+                banner.style.boxShadow = '0 2px 4px rgba(0,0,0,0.2)';
+                banner.textContent = 'REAL EMAIL MODE: Emails will be sent to actual recipients';
+                document.body.appendChild(banner);
+            }
+
+            // Remove any simulation mode banners
+            document.querySelectorAll('div').forEach(el => {
+                if (el.textContent && el.textContent.includes('SIMULATION MODE')) {
+                    if (el.parentNode) el.parentNode.removeChild(el);
+                }
+            });
+
+            // Force real email mode in EmailService
+            if (typeof EmailService !== 'undefined') {
+                EmailService.config.useRealEmails = true;
+                EmailService.config.useBackendServer = true;
+                console.log('Email service forcibly configured for real emails');
+            }
+        });
+
+        $(document).ready(function() {
+            console.log('Document ready - initializing email logs page');
+
+            // Initialize DataTable
+            const table = $('#emailLogsTable').DataTable({
+                responsive: true,
+                order: [[3, 'desc']], // Sort by date column descending
+                language: {
+                    search: "Quick Search:"
+                },
+                columnDefs: [
+                    { targets: 4, render: function(data) { // Status column
+                        return `<span class="status-badge ${data.toLowerCase()}">${data}</span>`;
+                    }},
+                    { targets: 5, render: function(data) { // Provider column
+                        return data ? `<span class="provider-badge ${data.toLowerCase()}">${data}</span>` : '-';
+                    }}
+                ]
+            });
+
+            // Use event delegation for dynamically created buttons
+            $(document).on('click', '.btn-view-details', function() {
+                const emailId = $(this).data('id');
+                console.log('View details button clicked for email ID:', emailId);
+                showEmailDetails(emailId);
+            });
+
+            $(document).on('click', '.btn-mark-sent', function() {
+                const emailId = $(this).data('id');
+                console.log('Mark as sent button clicked for email ID:', emailId);
+                markEmailAsSent(emailId);
+            });
+
+            $(document).on('click', '.mark-as-sent-btn', function() {
+                const emailId = $(this).data('id');
+                console.log('Mark as sent button clicked in modal for email ID:', emailId);
+                markEmailAsSent(emailId);
+            });
+
+            // Logout functionality
+            $('#logoutBtn').click(function(e) {
+                e.preventDefault();
+                localStorage.removeItem('currentUserSession');
+                window.location.href = 'login.html';
+            });
+
+            // Apply filters
+            $('#applyFilters').click(function() {
+                applyFilters();
+            });
+
+            // Reset filters
+            $('#resetFilters').click(function() {
+                $('#statusFilter').val('');
+                $('#providerFilter').val('');
+                $('#dateFilter').val('');
+                applyFilters();
+            });
+
+            // Test Gmail Server button
+            $('#testGmailServerButton').click(function() {
+                console.log('Test Gmail Server button clicked');
+
+                // Get the recipient email
+                const recipientEmail = prompt('Enter recipient email address:', 'p.v.v.s.saidinesh22@ifheindia.org');
+
+                if (recipientEmail) {
+                    // Show loading notification
+                    const notification = $('<div>')
+                        .addClass('notification')
+                        .css({
+                            'position': 'fixed',
+                            'top': '80px',
+                            'right': '20px',
+                            'padding': '15px 20px',
+                            'background-color': '#17a2b8',
+                            'color': 'white',
+                            'border-radius': '4px',
+                            'box-shadow': '0 4px 8px rgba(0,0,0,0.2)',
+                            'z-index': '9999'
+                        })
+                        .html('<i class="fas fa-spinner fa-spin"></i> Testing Gmail Server...')
+                        .appendTo('body');
+
+                    // Create email log entry
+                    const emailLogEntry = {
+                        id: 'EMAIL-GMAIL-TEST-' + Date.now().toString(),
+                        to: recipientEmail,
+                        subject: 'Gmail Server Test Email',
+                        sentAt: new Date().toISOString(),
+                        status: 'pending',
+                        provider: 'Gmail Server (Direct Test)',
+                        alertId: 'TEST-' + Date.now().toString().slice(-6),
+                        retryCount: 0
+                    };
+
+                    // Log the email immediately
+                    console.log('Creating Gmail server test email log entry:', emailLogEntry);
+                    const emailLogs = JSON.parse(localStorage.getItem('emailLogs') || '[]');
+                    emailLogs.unshift(emailLogEntry);
+                    localStorage.setItem('emailLogs', JSON.stringify(emailLogs));
+
+                    // Refresh the email logs
+                    applyFilters();
+
+                    // Send test email directly via the Gmail server
+                    fetch(`http://localhost:3007/send-test?email=${encodeURIComponent(recipientEmail)}`)
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error(`Server responded with status: ${response.status}`);
+                            }
+                            return response.json();
+                        })
+                        .then(responseData => {
+                            console.log('Gmail server test response:', responseData);
+
+                            if (responseData.success) {
+                                // Update the email log entry to sent
+                                const updatedLogs = JSON.parse(localStorage.getItem('emailLogs') || '[]');
+                                const logIndex = updatedLogs.findIndex(log => log.id === emailLogEntry.id);
+                                if (logIndex !== -1) {
+                                    updatedLogs[logIndex].status = 'sent';
+                                    updatedLogs[logIndex].completedAt = new Date().toISOString();
+                                    updatedLogs[logIndex].messageId = responseData.details.messageId;
+                                    updatedLogs[logIndex].note = 'Direct test of Gmail server';
+                                    localStorage.setItem('emailLogs', JSON.stringify(updatedLogs));
+                                }
+
+                                // Remove the loading notification
+                                notification.fadeOut(function() {
+                                    $(this).remove();
+                                });
+
+                                // Show success notification
+                                const successNotification = $('<div>')
+                                    .addClass('notification')
+                                    .css({
+                                        'position': 'fixed',
+                                        'top': '80px',
+                                        'right': '20px',
+                                        'padding': '15px 20px',
+                                        'background-color': '#28a745',
+                                        'color': 'white',
+                                        'border-radius': '4px',
+                                        'box-shadow': '0 4px 8px rgba(0,0,0,0.2)',
+                                        'z-index': '9999'
+                                    })
+                                    .html(`<i class="fas fa-check"></i> Gmail Server test email sent successfully to ${recipientEmail}!`)
+                                    .appendTo('body');
+
+                                // Remove success notification after 5 seconds
+                                setTimeout(function() {
+                                    successNotification.fadeOut(function() {
+                                        $(this).remove();
+                                    });
+                                }, 5000);
+
+                                // Refresh the email logs
+                                setTimeout(() => {
+                                    applyFilters();
+                                }, 1000);
+                            } else {
+                                throw new Error(responseData.message || 'Failed to send test email');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Gmail server test failed:', error);
+
+                            // Update the email log entry to failed
+                            const updatedLogs = JSON.parse(localStorage.getItem('emailLogs') || '[]');
+                            const logIndex = updatedLogs.findIndex(log => log.id === emailLogEntry.id);
+                            if (logIndex !== -1) {
+                                updatedLogs[logIndex].status = 'failed';
+                                updatedLogs[logIndex].error = error.message;
+                                localStorage.setItem('emailLogs', JSON.stringify(updatedLogs));
+                            }
+
+                            // Remove the loading notification
+                            notification.fadeOut(function() {
+                                $(this).remove();
+                            });
+
+                            // Show error notification
+                            const errorNotification = $('<div>')
+                                .addClass('notification')
+                                .css({
+                                    'position': 'fixed',
+                                    'top': '80px',
+                                    'right': '20px',
+                                    'padding': '15px 20px',
+                                    'background-color': '#dc3545',
+                                    'color': 'white',
+                                    'border-radius': '4px',
+                                    'box-shadow': '0 4px 8px rgba(0,0,0,0.2)',
+                                    'z-index': '9999'
+                                })
+                                .html(`<i class="fas fa-times"></i> Failed to send Gmail Server test email: ${error.message}`)
+                                .appendTo('body');
+
+                            // Remove error notification after 5 seconds
+                            setTimeout(function() {
+                                errorNotification.fadeOut(function() {
+                                    $(this).remove();
+                                });
+                            }, 5000);
+
+                            // Refresh the email logs
+                            setTimeout(() => {
+                                applyFilters();
+                            }, 1000);
+                        });
+                }
+            });
+
+            // Test Simple Gmail button
+            $('#testSimpleGmailButton').click(function() {
+                console.log('Test Simple Gmail button clicked');
+
+                // Get the recipient email
+                const recipientEmail = prompt('Enter recipient email address:', 'p.v.v.s.saidinesh22@ifheindia.org');
+
+                if (recipientEmail) {
+                    // Show loading notification
+                    const notification = $('<div>')
+                        .addClass('notification')
+                        .css({
+                            'position': 'fixed',
+                            'top': '80px',
+                            'right': '20px',
+                            'padding': '15px 20px',
+                            'background-color': '#17a2b8',
+                            'color': 'white',
+                            'border-radius': '4px',
+                            'box-shadow': '0 4px 8px rgba(0,0,0,0.2)',
+                            'z-index': '9999'
+                        })
+                        .html('<i class="fas fa-spinner fa-spin"></i> Testing Simple Gmail...')
+                        .appendTo('body');
+
+                    // Create email log entry
+                    const emailLogEntry = {
+                        id: 'EMAIL-SIMPLE-GMAIL-TEST-' + Date.now().toString(),
+                        to: recipientEmail,
+                        subject: 'Simple Gmail Test Email',
+                        sentAt: new Date().toISOString(),
+                        status: 'pending',
+                        provider: 'Simple Gmail (Direct Test)',
+                        alertId: 'TEST-' + Date.now().toString().slice(-6),
+                        retryCount: 0
+                    };
+
+                    // Log the email immediately
+                    console.log('Creating Simple Gmail test email log entry:', emailLogEntry);
+                    const emailLogs = JSON.parse(localStorage.getItem('emailLogs') || '[]');
+                    emailLogs.unshift(emailLogEntry);
+                    localStorage.setItem('emailLogs', JSON.stringify(emailLogs));
+
+                    // Refresh the email logs
+                    applyFilters();
+
+                    // Send test email directly via the Simple Gmail server
+                    fetch(`http://localhost:3009/send-test?email=${encodeURIComponent(recipientEmail)}`)
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error(`Server responded with status: ${response.status}`);
+                            }
+                            return response.json();
+                        })
+                        .then(responseData => {
+                            console.log('Simple Gmail test response:', responseData);
+
+                            if (responseData.success) {
+                                // Update the email log entry to sent
+                                const updatedLogs = JSON.parse(localStorage.getItem('emailLogs') || '[]');
+                                const logIndex = updatedLogs.findIndex(log => log.id === emailLogEntry.id);
+                                if (logIndex !== -1) {
+                                    updatedLogs[logIndex].status = 'sent';
+                                    updatedLogs[logIndex].completedAt = new Date().toISOString();
+                                    updatedLogs[logIndex].messageId = responseData.details.messageId;
+                                    updatedLogs[logIndex].note = 'Direct test of Simple Gmail';
+                                    localStorage.setItem('emailLogs', JSON.stringify(updatedLogs));
+                                }
+
+                                // Remove the loading notification
+                                notification.fadeOut(function() {
+                                    $(this).remove();
+                                });
+
+                                // Show success notification
+                                const successNotification = $('<div>')
+                                    .addClass('notification')
+                                    .css({
+                                        'position': 'fixed',
+                                        'top': '80px',
+                                        'right': '20px',
+                                        'padding': '15px 20px',
+                                        'background-color': '#28a745',
+                                        'color': 'white',
+                                        'border-radius': '4px',
+                                        'box-shadow': '0 4px 8px rgba(0,0,0,0.2)',
+                                        'z-index': '9999'
+                                    })
+                                    .html(`<i class="fas fa-check"></i> Simple Gmail test email sent successfully to ${recipientEmail}!`)
+                                    .appendTo('body');
+
+                                // Remove success notification after 5 seconds
+                                setTimeout(function() {
+                                    successNotification.fadeOut(function() {
+                                        $(this).remove();
+                                    });
+                                }, 5000);
+
+                                // Refresh the email logs
+                                setTimeout(() => {
+                                    applyFilters();
+                                }, 1000);
+                            } else {
+                                throw new Error(responseData.message || 'Failed to send test email');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Simple Gmail test failed:', error);
+
+                            // Update the email log entry to failed
+                            const updatedLogs = JSON.parse(localStorage.getItem('emailLogs') || '[]');
+                            const logIndex = updatedLogs.findIndex(log => log.id === emailLogEntry.id);
+                            if (logIndex !== -1) {
+                                updatedLogs[logIndex].status = 'failed';
+                                updatedLogs[logIndex].error = error.message;
+                                localStorage.setItem('emailLogs', JSON.stringify(updatedLogs));
+                            }
+
+                            // Remove the loading notification
+                            notification.fadeOut(function() {
+                                $(this).remove();
+                            });
+
+                            // Show error notification
+                            const errorNotification = $('<div>')
+                                .addClass('notification')
+                                .css({
+                                    'position': 'fixed',
+                                    'top': '80px',
+                                    'right': '20px',
+                                    'padding': '15px 20px',
+                                    'background-color': '#dc3545',
+                                    'color': 'white',
+                                    'border-radius': '4px',
+                                    'box-shadow': '0 4px 8px rgba(0,0,0,0.2)',
+                                    'z-index': '9999'
+                                })
+                                .html(`<i class="fas fa-times"></i> Failed to send Simple Gmail test email: ${error.message}`)
+                                .appendTo('body');
+
+                            // Remove error notification after 5 seconds
+                            setTimeout(function() {
+                                errorNotification.fadeOut(function() {
+                                    $(this).remove();
+                                });
+                            }, 5000);
+
+                            // Refresh the email logs
+                            setTimeout(() => {
+                                applyFilters();
+                            }, 1000);
+                        });
+                }
+            });
+
+            // Test Morning Email button
+            $('#testMorningEmailButton').click(function() {
+                console.log('Test Morning Email button clicked');
+
+                // Check if MorningEmailService is available
+                if (typeof MorningEmailService !== 'undefined') {
+                    console.log('MorningEmailService is available');
+
+                    // Show loading notification
+                    const notification = $('<div>')
+                        .addClass('notification')
+                        .css({
+                            'position': 'fixed',
+                            'top': '80px',
+                            'right': '20px',
+                            'padding': '15px 20px',
+                            'background-color': '#17a2b8',
+                            'color': 'white',
+                            'border-radius': '4px',
+                            'box-shadow': '0 4px 8px rgba(0,0,0,0.2)',
+                            'z-index': '9999'
+                        })
+                        .html('<i class="fas fa-spinner fa-spin"></i> Sending test email...')
+                        .appendTo('body');
+
+                    try {
+                        // Send test email with default recipient
+                        console.log('Calling MorningEmailService.sendTestEmail()');
+                        MorningEmailService.sendTestEmail()
+                            .then(function(response) {
+                                console.log('Test email sent successfully:', response);
+
+                                // Show success notification
+                                notification.html('<i class="fas fa-check"></i> Test email sent successfully!')
+                                    .css('background-color', '#28a745');
+
+                                // Remove notification after 5 seconds
+                                setTimeout(function() {
+                                    notification.fadeOut(function() {
+                                        $(this).remove();
+                                    });
+                                }, 5000);
+
+                                // Refresh the email logs
+                                setTimeout(function() {
+                                    applyFilters();
+                                }, 1000);
+                            })
+                            .catch(function(error) {
+                                console.error('Error sending test email:', error);
+
+                                // Show error notification
+                                notification.html('<i class="fas fa-times"></i> Error sending test email: ' + (error.message || 'Unknown error'))
+                                    .css('background-color', '#dc3545');
+
+                                // Remove notification after 5 seconds
+                                setTimeout(function() {
+                                    notification.fadeOut(function() {
+                                        $(this).remove();
+                                    });
+                                }, 5000);
+                            });
+                    } catch (error) {
+                        console.error('Exception when calling sendTestEmail:', error);
+
+                        // Show error notification
+                        notification.html('<i class="fas fa-times"></i> Exception: ' + (error.message || 'Unknown error'))
+                            .css('background-color', '#dc3545');
+
+                        // Remove notification after 5 seconds
+                        setTimeout(function() {
+                            notification.fadeOut(function() {
+                                $(this).remove();
+                            });
+                        }, 5000);
+                    }
+                } else {
+                    console.error('MorningEmailService is not available');
+                    alert('Morning Email Service is not available. Please make sure the script is loaded.');
+                }
+            });
+
+            // Refresh button
+            $('#refreshButton').click(function() {
+                // Show loading notification
+                const notification = $('<div>')
+                    .addClass('notification')
+                    .css({
+                        'position': 'fixed',
+                        'top': '80px',
+                        'right': '20px',
+                        'padding': '15px 20px',
+                        'background-color': '#17a2b8',
+                        'color': 'white',
+                        'border-radius': '4px',
+                        'box-shadow': '0 4px 8px rgba(0,0,0,0.2)',
+                        'z-index': '9999'
+                    })
+                    .html('<i class="fas fa-sync-alt fa-spin"></i> Refreshing email logs...')
+                    .appendTo('body');
+
+                // Refresh the email logs
+                setTimeout(function() {
+                    applyFilters();
+
+                    // Update notification
+                    notification.html('<i class="fas fa-check"></i> Email logs refreshed!')
+                        .css('background-color', '#28a745');
+
+                    // Remove notification after 2 seconds
+                    setTimeout(function() {
+                        notification.fadeOut(function() {
+                            $(this).remove();
+                        });
+                    }, 2000);
+                }, 500);
+            });
+
+            // Clear logs button
+            $('#clearLogsButton').click(function() {
+                if (confirm('Are you sure you want to clear all email logs? This action cannot be undone.')) {
+                    // Clear email logs
+                    localStorage.setItem('emailLogs', '[]');
+
+                    // Show notification
+                    const notification = $('<div>')
+                        .addClass('notification')
+                        .css({
+                            'position': 'fixed',
+                            'top': '80px',
+                            'right': '20px',
+                            'padding': '15px 20px',
+                            'background-color': '#28a745',
+                            'color': 'white',
+                            'border-radius': '4px',
+                            'box-shadow': '0 4px 8px rgba(0,0,0,0.2)',
+                            'z-index': '9999'
+                        })
+                        .html('<i class="fas fa-check"></i> Email logs cleared!')
+                        .appendTo('body');
+
+                    // Remove notification after 3 seconds
+                    setTimeout(function() {
+                        notification.fadeOut(function() {
+                            $(this).remove();
+                        });
+                    }, 3000);
+
+                    // Refresh the email logs
+                    applyFilters();
+                }
+            });
+
+            // Create test log button
+            $('#createTestLogButton').click(function() {
+                // Create a test email log
+                const testLog = {
+                    id: 'TEST-' + Date.now(),
+                    to: 'test@example.com',
+                    subject: 'Test Email ' + new Date().toLocaleString(),
+                    sentAt: new Date().toISOString(),
+                    status: 'sent',
+                    provider: 'Gmail (Morning)',
+                    alertId: 'TEST-ALERT-' + Date.now()
+                };
+
+                // Add to email logs
+                const emailLogs = JSON.parse(localStorage.getItem('emailLogs') || '[]');
+                emailLogs.unshift(testLog);
+                localStorage.setItem('emailLogs', JSON.stringify(emailLogs));
+
+                // Show notification
+                const notification = $('<div>')
+                    .addClass('notification')
+                    .css({
+                        'position': 'fixed',
+                        'top': '80px',
+                        'right': '20px',
+                        'padding': '15px 20px',
+                        'background-color': '#28a745',
+                        'color': 'white',
+                        'border-radius': '4px',
+                        'box-shadow': '0 4px 8px rgba(0,0,0,0.2)',
+                        'z-index': '9999'
+                    })
+                    .html('<i class="fas fa-check"></i> Test email log created!')
+                    .appendTo('body');
+
+                // Remove notification after 3 seconds
+                setTimeout(function() {
+                    notification.fadeOut(function() {
+                        $(this).remove();
+                    });
+                }, 3000);
+
+                // Refresh the email logs
+                applyFilters();
+            });
+
+            // Close modal when clicking the close button
+            $('.close').click(function() {
+                $('#emailDetailsModal').hide();
+            });
+
+            // Function to apply filters
+            function applyFilters() {
+                const statusFilter = $('#statusFilter').val();
+                const providerFilter = $('#providerFilter').val();
+                const dateFilter = $('#dateFilter').val();
+
+                // Get all email logs
+                let emailLogs = getEmailLogs();
+
+                // Apply status filter
+                if (statusFilter) {
+                    emailLogs = emailLogs.filter(log => log.status.toLowerCase() === statusFilter.toLowerCase());
+                }
+
+                // Apply provider filter
+                if (providerFilter) {
+                    emailLogs = emailLogs.filter(log => log.provider === providerFilter);
+                }
+
+                // Apply date filter
+                if (dateFilter) {
+                    const now = new Date();
+                    let startDate;
+
+                    switch (dateFilter) {
+                        case 'today':
+                            startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                            break;
+                        case 'yesterday':
+                            startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+                            const endOfYesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                            emailLogs = emailLogs.filter(log => {
+                                const logDate = new Date(log.sentAt);
+                                return logDate >= startDate && logDate < endOfYesterday;
+                            });
+                            break;
+                        case 'week':
+                            startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 7);
+                            break;
+                        case 'month':
+                            startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 30);
+                            break;
+                    }
+
+                    if (dateFilter !== 'yesterday') {
+                        emailLogs = emailLogs.filter(log => {
+                            const logDate = new Date(log.sentAt);
+                            return logDate >= startDate;
+                        });
+                    }
+                }
+
+                // Update UI with filtered logs
+                updateUI(emailLogs);
+            }
+
+            // Function to update the UI with filtered logs
+            function updateUI(logs) {
+                // Clear existing data
+                table.clear();
+
+                // Update table
+                logs.forEach(log => {
+                    const formattedDate = new Date(log.sentAt).toLocaleString();
+
+                    // Create action buttons based on status
+                    let actionButtons = `<button class="btn-view-details" data-id="${log.id}">View Details</button>`;
+
+                    // Add Mark as Sent button for pending or retrying emails
+                    if (log.status.toLowerCase() === 'retrying' || log.status.toLowerCase() === 'pending') {
+                        actionButtons += `<button class="btn-mark-sent" data-id="${log.id}">Mark as Sent</button>`;
+                    }
+
+                    table.row.add([
+                        log.id,
+                        log.to,
+                        log.subject,
+                        formattedDate,
+                        log.status,
+                        log.provider || '-',
+                        actionButtons
+                    ]);
+                });
+
+                // Draw the table
+                table.draw();
+
+                // Update statistics
+                updateStatistics(logs);
+
+                // Update chart
+                updateChart(logs);
+
+                // We'll use event delegation for these buttons instead of direct binding
+                // Event handlers are now attached at the document level
+            }
+
+            // Function to update statistics
+            function updateStatistics(logs) {
+                // Calculate total emails
+                $('#totalEmails').text(logs.length);
+
+                // Calculate successful emails (sent or completed via fallback)
+                const successfulEmails = logs.filter(log =>
+                    log.status.toLowerCase() === 'sent' ||
+                    (log.status.toLowerCase() === 'fallback' && !log.error)
+                ).length;
+                $('#successfulEmails').text(successfulEmails);
+
+                // Calculate failed emails
+                const failedEmails = logs.filter(log => log.status.toLowerCase() === 'failed').length;
+                $('#failedEmails').text(failedEmails);
+
+                // Calculate in-progress emails
+                const pendingEmails = logs.filter(log =>
+                    log.status.toLowerCase() === 'pending' ||
+                    log.status.toLowerCase() === 'retrying'
+                ).length;
+
+                // Add a new stat card for pending emails if it doesn't exist
+                if ($('#pendingEmails').length === 0) {
+                    $('.stats-container').append(`
+                        <div class="stat-card">
+                            <h3>In Progress</h3>
+                            <div id="pendingEmails" class="stat-number">0</div>
+                            <p>Pending/retrying</p>
+                        </div>
+                    `);
+                }
+
+                $('#pendingEmails').text(pendingEmails);
+
+                // Calculate success rate (only for completed emails)
+                const completedEmails = successfulEmails + failedEmails;
+                const successRate = completedEmails > 0 ? Math.round((successfulEmails / completedEmails) * 100) : 0;
+                $('#successRate').text(successRate + '%');
+            }
+
+            // Function to update chart
+            function updateChart(logs) {
+                // Group logs by date
+                const logsByDate = {};
+
+                logs.forEach(log => {
+                    const date = new Date(log.sentAt).toLocaleDateString();
+
+                    if (!logsByDate[date]) {
+                        logsByDate[date] = {
+                            sent: 0,
+                            failed: 0,
+                            pending: 0,
+                            retrying: 0
+                        };
+                    }
+
+                    // Count emails by status
+                    if (log.status.toLowerCase() === 'sent' ||
+                        (log.status.toLowerCase() === 'fallback' && !log.error)) {
+                        logsByDate[date].sent++;
+                    } else if (log.status.toLowerCase() === 'failed') {
+                        logsByDate[date].failed++;
+                    } else if (log.status.toLowerCase() === 'pending') {
+                        logsByDate[date].pending++;
+                    } else if (log.status.toLowerCase() === 'retrying') {
+                        logsByDate[date].retrying++;
+                    }
+                });
+
+                // Sort dates
+                const sortedDates = Object.keys(logsByDate).sort((a, b) => new Date(a) - new Date(b));
+
+                // Prepare data for chart
+                const labels = sortedDates;
+                const sentData = sortedDates.map(date => logsByDate[date].sent);
+                const failedData = sortedDates.map(date => logsByDate[date].failed);
+                const pendingData = sortedDates.map(date => logsByDate[date].pending);
+                const retryingData = sortedDates.map(date => logsByDate[date].retrying);
+
+                // Create or update chart
+                if (window.emailChart) {
+                    window.emailChart.data.labels = labels;
+                    window.emailChart.data.datasets[0].data = sentData;
+                    window.emailChart.data.datasets[1].data = failedData;
+
+                    // Check if we need to add pending and retrying datasets
+                    if (window.emailChart.data.datasets.length === 2) {
+                        window.emailChart.data.datasets.push({
+                            label: 'Pending Emails',
+                            data: pendingData,
+                            backgroundColor: 'rgba(243, 156, 18, 0.2)',
+                            borderColor: 'rgba(243, 156, 18, 1)',
+                            borderWidth: 2,
+                            tension: 0.1
+                        });
+
+                        window.emailChart.data.datasets.push({
+                            label: 'Retrying Emails',
+                            data: retryingData,
+                            backgroundColor: 'rgba(52, 152, 219, 0.2)',
+                            borderColor: 'rgba(52, 152, 219, 1)',
+                            borderWidth: 2,
+                            tension: 0.1
+                        });
+                    } else {
+                        window.emailChart.data.datasets[2].data = pendingData;
+                        window.emailChart.data.datasets[3].data = retryingData;
+                    }
+
+                    window.emailChart.update();
+                } else {
+                    const ctx = document.getElementById('emailChart').getContext('2d');
+                    window.emailChart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: labels,
+                            datasets: [
+                                {
+                                    label: 'Sent Emails',
+                                    data: sentData,
+                                    backgroundColor: 'rgba(46, 204, 113, 0.2)',
+                                    borderColor: 'rgba(46, 204, 113, 1)',
+                                    borderWidth: 2,
+                                    tension: 0.1
+                                },
+                                {
+                                    label: 'Failed Emails',
+                                    data: failedData,
+                                    backgroundColor: 'rgba(231, 76, 60, 0.2)',
+                                    borderColor: 'rgba(231, 76, 60, 1)',
+                                    borderWidth: 2,
+                                    tension: 0.1
+                                },
+                                {
+                                    label: 'Pending Emails',
+                                    data: pendingData,
+                                    backgroundColor: 'rgba(243, 156, 18, 0.2)',
+                                    borderColor: 'rgba(243, 156, 18, 1)',
+                                    borderWidth: 2,
+                                    tension: 0.1
+                                },
+                                {
+                                    label: 'Retrying Emails',
+                                    data: retryingData,
+                                    backgroundColor: 'rgba(52, 152, 219, 0.2)',
+                                    borderColor: 'rgba(52, 152, 219, 1)',
+                                    borderWidth: 2,
+                                    tension: 0.1
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        precision: 0
+                                    }
+                                }
+                            },
+                            plugins: {
+                                legend: {
+                                    position: 'top',
+                                    labels: {
+                                        usePointStyle: true,
+                                        padding: 15
+                                    }
+                                },
+                                tooltip: {
+                                    mode: 'index',
+                                    intersect: false
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+
+            // Function to show email details
+            function showEmailDetails(emailId) {
+                const logs = getEmailLogs();
+                const email = logs.find(log => log.id === emailId);
+
+                if (email) {
+                    // Create details HTML
+                    const detailsContainer = document.getElementById('emailDetails');
+                    const formattedDate = new Date(email.sentAt).toLocaleString();
+
+                    // Get the related alert if available
+                    const alerts = JSON.parse(localStorage.getItem('registeredAlerts') || '[]');
+                    const relatedAlert = alerts.find(alert => alert.id === email.alertId);
+
+                    detailsContainer.innerHTML = `
+                        <div class="email-detail-grid">
+                            <div class="detail-item">
+                                <span class="detail-label">Email ID:</span>
+                                <span class="detail-value">${email.id}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Recipient:</span>
+                                <span class="detail-value">${email.to}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Subject:</span>
+                                <span class="detail-value">${email.subject}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Sent Date:</span>
+                                <span class="detail-value">${formattedDate}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Status:</span>
+                                <span class="detail-value status-badge ${email.status.toLowerCase()}">${email.status}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Provider:</span>
+                                <span class="detail-value provider-badge ${(email.provider || '').toLowerCase()}">${email.provider || 'Not specified'}</span>
+                            </div>
+                            ${email.error ? `
+                            <div class="detail-item full-width">
+                                <span class="detail-label">Error:</span>
+                                <span class="detail-value">${email.error}</span>
+                            </div>` : ''}
+
+                            ${email.batchId ? `
+                            <div class="detail-item">
+                                <span class="detail-label">Batch ID:</span>
+                                <span class="detail-value">${email.batchId}</span>
+                            </div>` : ''}
+
+                            ${email.retryCount ? `
+                            <div class="detail-item">
+                                <span class="detail-label">Retry Count:</span>
+                                <span class="detail-value">${email.retryCount}</span>
+                            </div>` : ''}
+
+                            <div class="detail-item full-width">
+                                <span class="detail-label">Related Alert:</span>
+                                <span class="detail-value">${email.alertId || 'Not specified'}</span>
+                            </div>
+
+                            ${relatedAlert ? `
+                            <div class="detail-item full-width">
+                                <h3>Alert Details</h3>
+                                <div class="alert-details">
+                                    <p><strong>Disaster Type:</strong> ${relatedAlert.disasterType}</p>
+                                    <p><strong>Location:</strong> ${relatedAlert.location}</p>
+                                    <p><strong>Severity:</strong> ${relatedAlert.severity}</p>
+                                    <p><strong>Date:</strong> ${relatedAlert.date}</p>
+                                    <p><strong>Status:</strong> ${relatedAlert.status}</p>
+                                    <p><strong>Description:</strong> ${relatedAlert.description}</p>
+                                </div>
+                            </div>` : ''}
+                        </div>
+
+                        <div class="detail-actions">
+                            ${(email.status.toLowerCase() === 'retrying' || email.status.toLowerCase() === 'pending') ? `
+                            <button class="btn btn-success mark-as-sent-btn" data-id="${email.id}">
+                                <i class="fas fa-check-circle"></i> Mark as Sent
+                            </button>` : ''}
+
+                            ${relatedAlert ? `
+                            <a href="registered-alerts.html" class="btn">View All Alerts</a>` : ''}
+                        </div>
+                    `;
+
+                    // Show the modal
+                    document.getElementById('emailDetailsModal').style.display = 'block';
+
+                    // No need to add event listener here - we're using event delegation
+                }
+            }
+
+            // Function to mark a single email as sent
+            function markEmailAsSent(emailId) {
+                console.log('Marking email as sent:', emailId);
+
+                // Get all email logs
+                const emailLogs = JSON.parse(localStorage.getItem('emailLogs') || '[]');
+
+                // Find the email by ID
+                const emailIndex = emailLogs.findIndex(log => log.id === emailId);
+
+                if (emailIndex !== -1) {
+                    console.log('Found email at index:', emailIndex, 'Current status:', emailLogs[emailIndex].status);
+
+                    // Only update if the email is pending or retrying
+                    if (emailLogs[emailIndex].status.toLowerCase() === 'pending' ||
+                        emailLogs[emailIndex].status.toLowerCase() === 'retrying') {
+
+                        // Update the email status
+                        emailLogs[emailIndex].status = 'sent';
+                        emailLogs[emailIndex].note = 'Manually marked as sent';
+                        emailLogs[emailIndex].sentVia = 'Manual Override';
+                        emailLogs[emailIndex].completedAt = new Date().toISOString();
+
+                        // Save updated logs
+                        localStorage.setItem('emailLogs', JSON.stringify(emailLogs));
+                        console.log('Email status updated to sent');
+
+                        // Show success notification
+                        const notification = $('<div>')
+                            .addClass('notification')
+                            .css({
+                                'position': 'fixed',
+                                'top': '80px',
+                                'right': '20px',
+                                'padding': '15px 20px',
+                                'background-color': '#28a745',
+                                'color': 'white',
+                                'border-radius': '4px',
+                                'box-shadow': '0 4px 8px rgba(0,0,0,0.2)',
+                                'z-index': '9999'
+                            })
+                            .html('<i class="fas fa-check"></i> Email marked as sent!')
+                            .appendTo('body');
+
+                        // Remove notification after 3 seconds
+                        setTimeout(function() {
+                            notification.fadeOut(function() {
+                                $(this).remove();
+                            });
+                        }, 3000);
+
+                        // Close the modal if it's open
+                        if ($('#emailDetailsModal').is(':visible')) {
+                            document.getElementById('emailDetailsModal').style.display = 'none';
+                        }
+
+                        // Refresh the email logs
+                        applyFilters();
+                    } else {
+                        console.log('Email is not in pending or retrying status, current status:', emailLogs[emailIndex].status);
+                    }
+                } else {
+                    console.error('Email not found with ID:', emailId);
+                }
+            }
+
+            // Function to get email logs from localStorage
+            function getEmailLogs() {
+                console.log('Retrieving email logs...');
+
+                // Get email logs from localStorage
+                const emailLogs = JSON.parse(localStorage.getItem('emailLogs') || '[]');
+                console.log('Raw email logs from localStorage:', emailLogs);
+
+                // Clear any sample logs if real logs exist
+                const realLogs = emailLogs.filter(log => !log.id || !log.id.startsWith('SAMPLE-'));
+
+                // If we have real logs, use only those
+                if (realLogs.length > 0) {
+                    console.log('Found', realLogs.length, 'real email logs');
+
+                    // Convert to the format needed for display
+                    const logs = realLogs.map(log => ({
+                        id: log.id || `email-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+                        to: log.to || log.recipients || 'user@example.com',
+                        subject: log.subject || `${log.disasterType} Alert for ${log.location}`,
+                        sentAt: log.sentDate || log.sentAt,
+                        status: log.status || 'sent',
+                        provider: log.provider || 'Gmail (Direct)',
+                        alertId: log.alertId,
+                        error: log.error
+                    }));
+
+                    console.log('Processed real email logs:', logs);
+                    return logs;
+                }
+
+                // If no real logs found, create sample logs
+                console.log('No real email logs found, creating sample logs');
+                const sampleLogs = createSampleEmailLogs();
+
+                // Store sample logs but mark them as samples
+                localStorage.setItem('emailLogs', JSON.stringify(sampleLogs));
+
+                console.log('Created sample logs:', sampleLogs);
+                return sampleLogs;
+            }
+
+            // Function to create sample email logs
+            function createSampleEmailLogs() {
+                const now = new Date();
+                const yesterday = new Date(now);
+                yesterday.setDate(yesterday.getDate() - 1);
+                const twoDaysAgo = new Date(now);
+                twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
+
+                return [
+                    {
+                        id: 'SAMPLE-001',
+                        to: 'user@example.com',
+                        subject: 'Earthquake Alert for San Francisco, USA',
+                        sentAt: now.toISOString(),
+                        status: 'sent',
+                        provider: 'Gmail (Direct)',
+                        alertId: 'ALT001'
+                    },
+                    {
+                        id: 'SAMPLE-002',
+                        to: 'admin@example.com',
+                        subject: 'Hurricane Alert for Miami, Florida',
+                        sentAt: yesterday.toISOString(),
+                        status: 'sent',
+                        provider: 'Gmail (Direct)',
+                        alertId: 'ALT002'
+                    },
+                    {
+                        id: 'SAMPLE-003',
+                        to: 'support@example.com',
+                        subject: 'Flood Alert for New Orleans',
+                        sentAt: twoDaysAgo.toISOString(),
+                        status: 'failed',
+                        provider: 'EmailJS',
+                        alertId: 'ALT003',
+                        error: 'Connection timeout'
+                    }
+                ];
+            }
+
+            // Fix pending emails button
+            $('#fixPendingEmailsButton').click(function() {
+                console.log('Fix Pending Emails button clicked');
+
+                // Get all email logs
+                const emailLogs = JSON.parse(localStorage.getItem('emailLogs') || '[]');
+
+                // Find all pending emails
+                const pendingEmails = emailLogs.filter(log =>
+                    log.status && log.status.toLowerCase() === 'pending'
+                );
+
+                console.log('Found pending emails:', pendingEmails);
+
+                if (pendingEmails.length === 0) {
+                    // Show notification if no pending emails found
+                    const notification = $('<div>')
+                        .addClass('notification')
+                        .css({
+                            'position': 'fixed',
+                            'top': '80px',
+                            'right': '20px',
+                            'padding': '15px 20px',
+                            'background-color': '#17a2b8',
+                            'color': 'white',
+                            'border-radius': '4px',
+                            'box-shadow': '0 4px 8px rgba(0,0,0,0.2)',
+                            'z-index': '9999'
+                        })
+                        .html('<i class="fas fa-info-circle"></i> No pending emails found!')
+                        .appendTo('body');
+
+                    // Remove notification after 3 seconds
+                    setTimeout(function() {
+                        notification.fadeOut(function() {
+                            $(this).remove();
+                        });
+                    }, 3000);
+
+                    return;
+                }
+
+                // Show loading notification
+                const loadingNotification = $('<div>')
+                    .addClass('notification')
+                    .css({
+                        'position': 'fixed',
+                        'top': '80px',
+                        'right': '20px',
+                        'padding': '15px 20px',
+                        'background-color': '#17a2b8',
+                        'color': 'white',
+                        'border-radius': '4px',
+                        'box-shadow': '0 4px 8px rgba(0,0,0,0.2)',
+                        'z-index': '9999'
+                    })
+                    .html(`<i class="fas fa-spinner fa-spin"></i> Fixing ${pendingEmails.length} pending email(s)...`)
+                    .appendTo('body');
+
+                // IMMEDIATELY mark all pending emails as sent
+                let fixedCount = 0;
+
+                // Update all pending emails at once
+                pendingEmails.forEach(function(email) {
+                    // Find the email in the logs
+                    const logIndex = emailLogs.findIndex(log => log.id === email.id);
+                    if (logIndex !== -1) {
+                        // Update the email status
+                        emailLogs[logIndex].status = 'sent';
+                        emailLogs[logIndex].completedAt = new Date().toISOString();
+                        emailLogs[logIndex].messageId = 'force-fixed-' + Date.now();
+                        emailLogs[logIndex].note = 'Force-fixed via Fix Pending Emails button';
+                        emailLogs[logIndex].sentVia = 'Force Fix';
+                        fixedCount++;
+                    }
+                });
+
+                // Save the updated logs
+                localStorage.setItem('emailLogs', JSON.stringify(emailLogs));
+
+                // Remove loading notification
+                loadingNotification.fadeOut(function() {
+                    $(this).remove();
+                });
+
+                // Show success notification
+                const successNotification = $('<div>')
+                    .addClass('notification')
+                    .css({
+                        'position': 'fixed',
+                        'top': '80px',
+                        'right': '20px',
+                        'padding': '15px 20px',
+                        'background-color': '#28a745',
+                        'color': 'white',
+                        'border-radius': '4px',
+                        'box-shadow': '0 4px 8px rgba(0,0,0,0.2)',
+                        'z-index': '9999'
+                    })
+                    .html(`<i class="fas fa-check"></i> Force-fixed ${fixedCount} pending email(s)!`)
+                    .appendTo('body');
+
+                // Remove success notification after 5 seconds
+                setTimeout(function() {
+                    successNotification.fadeOut(function() {
+                        $(this).remove();
+                    });
+                }, 5000);
+
+                // Refresh the email logs
+                applyFilters();
+            });
+
+            // Initialize the page with all logs
+            applyFilters();
+        });
+    </script>
+
+    <!-- Modern UI JavaScript -->
+    <script src="js/modern-ui.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disaster Management System - Home</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/modern-theme.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .hero-section {
+            background: linear-gradient(135deg, rgba(0, 78, 146, 0.8), rgba(58, 110, 165, 0.8)), url('https://plus.unsplash.com/premium_photo-1661490061456-00879b843549?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8ZGlzYXN0ZXIlMjBtYW5hZ2VtZW50fGVufDB8fDB8fHww');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 80px 20px;
+            text-align: center;
+            border-radius: var(--radius-md);
+            margin-bottom: 30px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .hero-title {
+            font-size: 2.8rem;
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            opacity: 0.9;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .hero-buttons .btn {
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            min-width: 150px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .features-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .feature-card {
+            background-color: var(--white);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-md);
+            padding: 30px;
+            text-align: center;
+            transition: all var(--transition-normal);
+            border-top: 4px solid var(--primary-color);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+
+        .feature-title {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: var(--primary-dark);
+        }
+
+        .feature-description {
+            color: var(--dark-gray);
+            line-height: 1.6;
+        }
+
+        .footer {
+            margin-top: 80px;
+            text-align: center;
+            padding: 30px 0;
+            color: var(--dark-gray);
+            border-top: 1px solid var(--light-gray);
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">Disaster Management System</a>
+            <button type="button" class="nav-toggle-btn" aria-label="Toggle navigation menu" title="Toggle Menu">
+                <i class="fas fa-bars"></i>
+            </button>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="precaution.html">Precautions</a></li>
+                <li><a href="registered-alerts.html">Registered Alerts</a></li>
+                <li><a href="login.html">Login</a></li>
+                <li><a href="signup.html">Sign Up</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="hero-section animate-on-scroll">
+            <h1 class="hero-title">Disaster Management System</h1>
+            <p class="hero-subtitle">A comprehensive platform for tracking, managing, and responding to disaster events worldwide. Get real-time alerts, safety information, and emergency contacts.</p>
+
+            <div class="hero-buttons">
+                <a href="login.html" class="btn">
+                    <i class="fas fa-sign-in-alt"></i> Log In
+                </a>
+                <a href="signup.html" class="btn btn-success">
+                    <i class="fas fa-user-plus"></i> Sign Up
+                </a>
+            </div>
+        </div>
+
+        <div class="features-section">
+            <div class="feature-card animate-on-scroll">
+                <div class="feature-icon">
+                    <i class="fas fa-bell"></i>
+                </div>
+                <h3 class="feature-title">Real-time Alerts</h3>
+                <p class="feature-description">Receive immediate notifications about disasters in your area of interest. Stay informed with timely and accurate information.</p>
+            </div>
+
+            <div class="feature-card animate-on-scroll">
+                <div class="feature-icon">
+                    <i class="fas fa-map-marked-alt"></i>
+                </div>
+                <h3 class="feature-title">Interactive Maps</h3>
+                <p class="feature-description">Visualize disaster events on interactive maps. Track the location, severity, and impact of various disasters worldwide.</p>
+            </div>
+
+            <div class="feature-card animate-on-scroll">
+                <div class="feature-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h3 class="feature-title">Safety Precautions</h3>
+                <p class="feature-description">Access comprehensive safety guidelines for different types of disasters. Learn how to prepare, respond, and recover effectively.</p>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>© 2023 Disaster Management System. All rights reserved.</p>
+        </div>
+    </div>
+
+    <!-- Sample data initialization -->
+    <script src="js/sample-data.js"></script>
+    <!-- Modern UI JavaScript -->
+    <script src="js/modern-ui.js"></script>
+</body>
+</html>

@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registered Alerts - Disaster Management System</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/modern-theme.css">
+    <link rel="stylesheet" href="css/table-text-fix.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- Force real email mode CSS -->
+    <link rel="stylesheet" href="css/force-real-email.css">
+    <!-- DataTables CSS for better table functionality -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        /* Loading message styles */
+        .loading-message {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .loading-message i {
+            margin-right: 10px;
+        }
+
+        /* Email confirmation modal styles */
+        .email-confirmation-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .email-confirmation-content {
+            background-color: white;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .email-header {
+            background-color: #3498db;
+            color: white;
+            padding: 15px 20px;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .email-header h3 {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+
+        .close-email-modal {
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .email-body {
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+
+        .email-field {
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .email-content {
+            background-color: white;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            margin-top: 15px;
+        }
+
+        .alert-details {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            border-left: 4px solid #3498db;
+        }
+
+        .alert-details p {
+            margin: 5px 0;
+        }
+
+        .email-footer {
+            padding: 15px 20px;
+            text-align: right;
+            border-top: 1px solid #eee;
+        }
+
+        .close-btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .close-btn:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <!-- Session check script -->
+    <script>
+        // Check if user is logged in
+        function checkUserSession() {
+            const session = JSON.parse(localStorage.getItem('currentUserSession'));
+            if (!session || !session.active) {
+                alert('Please log in to access the system.');
+                window.location.href = 'login.html';
+            }
+            return session;
+        }
+
+        // Get current user session
+        const userSession = checkUserSession();
+    </script>
+
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="home.html" class="logo">Disaster Management System</a>
+            <button type="button" class="nav-toggle-btn" aria-label="Toggle navigation menu" title="Toggle Menu">
+                <i class="fas fa-bars"></i>
+            </button>
+            <ul class="nav-links">
+                <li><a href="home.html">Home</a></li>
+                <li><a href="alert.html">Alerts</a></li>
+                <li><a href="registered-alerts.html">Registered Alerts</a></li>
+                <li><a href="occurred-disasters.html">Occurred Disasters</a></li>
+                <li><a href="insight.html">Insights</a></li>
+                <li><a href="precaution.html">Precautions</a></li>
+                <li><a href="email-logs.html">Email Logs</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="#" id="logoutBtn">Logout</a></li>
+                <li><span id="userWelcome" class="user-welcome"></span></li>
+            </ul>
+        </div>
+    </nav>
+
+
+    <div class="container">
+        <h1 class="text-center">Registered Alerts</h1>
+        <p class="text-center">View all registered disaster alerts in the system.</p>
+
+        <div class="card">
+            <h2 class="card-title">Filter Alerts</h2>
+            <div class="filter-controls">
+                <div class="form-group">
+                    <label for="disasterTypeFilter">Disaster Type:</label>
+                    <select id="disasterTypeFilter" class="form-control">
+                        <option value="">All Types</option>
+                        <option value="Earthquake">Earthquake</option>
+                        <option value="Storm">Storm</option>
+                        <option value="Flood">Flood</option>
+                        <option value="Cyclone">Cyclone</option>
+                        <option value="Drought">Drought</option>
+                        <option value="Avalanche">Avalanche</option>
+                        <option value="Wildfire">Wildfire</option>
+                        <option value="Volcano">Volcano</option>
+                        <option value="Hurricane">Hurricane</option>
+                        <option value="Tsunami">Tsunami</option>
+                        <option value="Tornado">Tornado</option>
+                        <option value="Landslide">Landslide</option>
+                        <option value="Blizzard">Blizzard</option>
+                        <option value="Heatwave">Heatwave</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="severityFilter">Severity:</label>
+                    <select id="severityFilter" class="form-control">
+                        <option value="">All Severities</option>
+                        <option value="Low">Low</option>
+                        <option value="Medium">Medium</option>
+                        <option value="High">High</option>
+                        <option value="Critical">Critical</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="dateFilter">Date Range:</label>
+                    <div class="date-range">
+                        <label for="startDate">Start Date:</label>
+                        <input type="date" id="startDate" class="form-control" aria-label="Start Date">
+                        <span>to</span>
+                        <label for="endDate">End Date:</label>
+                        <input type="date" id="endDate" class="form-control" aria-label="End Date">
+                    </div>
+                </div>
+                <button type="button" id="applyFilters" class="btn">Apply Filters</button>
+                <button type="button" id="resetFilters" class="btn btn-secondary">Reset</button>
+                <button type="button" id="refreshAlerts" class="btn btn-success">Refresh Alerts</button>
+            </div>
+        </div>
+
+        <div class="card mt-20">
+            <h2 class="card-title">Registered Alerts</h2>
+            <div class="table-responsive">
+                <table id="alertsTable" class="display">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Disaster Type</th>
+                            <th>Date</th>
+                            <th>Location</th>
+                            <th>Severity</th>
+                            <th>Affected Areas</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="alertsTableBody">
+                        <!-- Table rows will be populated dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Alert Details Modal -->
+        <div id="alertDetailsModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Alert Details</h2>
+                <div id="alertDetails">
+                    <!-- Alert details will be populated dynamically -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- jQuery and DataTables JS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <!-- EmailJS for sending emails (latest version) -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <!-- Storage utilities -->
+    <script src="js/storage-utils.js"></script>
+    <!-- Email service -->
+    <script src="js/email-service.js"></script>
+    <!-- Force real email mode -->
+    <script src="js/force-real-email.js"></script>
+    <!-- Aggressive real email mode -->
+    <script src="js/force-real-email-aggressive.js"></script>
+    <!-- Clear Data Script -->
+    <script src="js/clear-data.js"></script>
+
+    <script>
+        // Force real email mode
+        document.addEventListener('DOMContentLoaded', function() {
+            // Create a permanent green banner if it doesn't exist
+            if (!document.querySelector('.real-email-banner')) {
+                const banner = document.createElement('div');
+                banner.className = 'real-email-banner';
+                banner.style.position = 'fixed';
+                banner.style.top = '0';
+                banner.style.left = '0';
+                banner.style.width = '100%';
+                banner.style.backgroundColor = '#28a745';
+                banner.style.color = 'white';
+                banner.style.textAlign = 'center';
+                banner.style.padding = '10px';
+                banner.style.fontWeight = 'bold';
+                banner.style.zIndex = '9999';
+                banner.style.boxShadow = '0 2px 4px rgba(0,0,0,0.2)';
+                banner.textContent = 'REAL EMAIL MODE: Emails will be sent to actual recipients';
+                document.body.appendChild(banner);
+            }
+
+            // Remove any simulation mode banners
+            document.querySelectorAll('div').forEach(el => {
+                if (el.textContent && el.textContent.includes('SIMULATION MODE')) {
+                    if (el.parentNode) el.parentNode.removeChild(el);
+                }
+            });
+
+            // Force real email mode in EmailService
+            if (typeof EmailService !== 'undefined') {
+                EmailService.config.useRealEmails = true;
+                EmailService.config.useBackendServer = true;
+                console.log('Email service forcibly configured for real emails');
+            }
+        });
+
+        // Sample alerts data to use if no alerts exist
+        const sampleAlerts = [
+            {
+                id: "ALT001",
+                disasterType: "Earthquake",
+                date: "2023-08-15",
+                location: "San Francisco, USA",
+                severity: "High",
+                affectedAreas: "Downtown, Marina District, Richmond District",
+                status: "Active",
+                description: "Magnitude 6.2 earthquake detected near San Francisco Bay Area. Potential for aftershocks.",
+                reportedBy: "USGS Monitoring Station",
+                timestamp: "2023-08-15T08:30:00",
+                coordinates: { lat: 37.7749, lng: -122.4194 },
+                evacuationOrders: "Voluntary evacuation for Marina District",
+                emergencyContacts: "Emergency Services: 911, SF Emergency Management: (415) 558-2700"
+            },
+            {
+                id: "ALT002",
+                disasterType: "Hurricane",
+                date: "2023-08-10",
+                location: "Miami, Florida, USA",
+                severity: "Critical",
+                affectedAreas: "Miami Beach, Downtown Miami, Key Biscayne",
+                status: "Active",
+                description: "Category 4 hurricane approaching Miami coastline. Expected landfall within 24 hours.",
+                reportedBy: "National Hurricane Center",
+                timestamp: "2023-08-10T14:15:00",
+                coordinates: { lat: 25.7617, lng: -80.1918 },
+                evacuationOrders: "Mandatory evacuation for coastal areas",
+                emergencyContacts: "Emergency Services: 911, Miami-Dade Emergency Management: (305) 468-5400"
+            },
+            {
+                id: "ALT003",
+                disasterType: "Flood",
+                date: "2023-08-05",
+                location: "New Orleans, Louisiana, USA",
+                severity: "Medium",
+                affectedAreas: "Lower Ninth Ward, Gentilly, Lakeview",
+                status: "Monitoring",
+                description: "Rising water levels in Mississippi River due to heavy rainfall. Potential for flooding in low-lying areas.",
+                reportedBy: "National Weather Service",
+                timestamp: "2023-08-05T10:45:00",
+                coordinates: { lat: 29.9511, lng: -90.0715 },
+                evacuationOrders: "None at this time",
+                emergencyContacts: "Emergency Services: 911, New Orleans Emergency Management: (504) 658-8700"
+            },
+            {
+                id: "ALT004",
+                disasterType: "Wildfire",
+                date: "2023-07-28",
+                location: "Los Angeles County, California, USA",
+                severity: "High",
+                affectedAreas: "Angeles National Forest, Santa Clarita, Sylmar",
+                status: "Active",
+                description: "Rapidly spreading wildfire in Angeles National Forest. Over 5,000 acres burned. 25% contained.",
+                reportedBy: "CAL FIRE",
+                timestamp: "2023-07-28T16:20:00",
+                coordinates: { lat: 34.3872, lng: -118.1253 },
+                evacuationOrders: "Mandatory evacuation for Sylmar and parts of Santa Clarita",
+                emergencyContacts: "Emergency Services: 911, LA County Fire Department: (323) 881-2411"
+            },
+            {
+                id: "ALT005",
+                disasterType: "Tornado",
+                date: "2023-07-20",
+                location: "Oklahoma City, Oklahoma, USA",
+                severity: "Critical",
+                affectedAreas: "Moore, Norman, Midwest City",
+                status: "Active",
+                description: "EF3 tornado reported moving northeast at 35 mph. Take shelter immediately.",
+                reportedBy: "National Weather Service",
+                timestamp: "2023-07-20T18:05:00",
+                coordinates: { lat: 35.4676, lng: -97.5164 },
+                evacuationOrders: "Seek immediate shelter",
+                emergencyContacts: "Emergency Services: 911, Oklahoma Emergency Management: (405) 521-2481"
+            },
+            {
+                id: "ALT006",
+                disasterType: "Tsunami",
+                date: "2023-07-15",
+                location: "Honolulu, Hawaii, USA",
+                severity: "High",
+                affectedAreas: "Waikiki, Ala Moana, Downtown Honolulu",
+                status: "Warning",
+                description: "Tsunami warning issued following 7.8 magnitude earthquake in Pacific Ocean. Waves expected within 3 hours.",
+                reportedBy: "Pacific Tsunami Warning Center",
+                timestamp: "2023-07-15T09:30:00",
+                coordinates: { lat: 21.3069, lng: -157.8583 },
+                evacuationOrders: "Mandatory evacuation for coastal areas",
+                emergencyContacts: "Emergency Services: 911, Hawaii Emergency Management: (808) 733-4300"
+            },
+            {
+                id: "ALT007",
+                disasterType: "Drought",
+                date: "2023-07-01",
+                location: "Phoenix, Arizona, USA",
+                severity: "Medium",
+                affectedAreas: "Maricopa County, Pinal County",
+                status: "Ongoing",
+                description: "Severe drought conditions persisting. Water conservation measures in effect.",
+                reportedBy: "Arizona Department of Water Resources",
+                timestamp: "2023-07-01T11:00:00",
+                coordinates: { lat: 33.4484, lng: -112.0740 },
+                evacuationOrders: "None",
+                emergencyContacts: "Arizona Department of Water Resources: (602) 771-8500"
+            },
+            {
+                id: "ALT008",
+                disasterType: "Blizzard",
+                date: "2023-01-10",
+                location: "Denver, Colorado, USA",
+                severity: "High",
+                affectedAreas: "Denver Metro Area, Boulder County, Jefferson County",
+                status: "Active",
+                description: "Severe blizzard with expected snowfall of 18-24 inches and winds up to 45 mph. Whiteout conditions expected.",
+                reportedBy: "National Weather Service",
+                timestamp: "2023-01-10T07:15:00",
+                coordinates: { lat: 39.7392, lng: -104.9903 },
+                evacuationOrders: "Travel not recommended",
+                emergencyContacts: "Emergency Services: 911, Colorado Emergency Management: (720) 852-6600"
+            },
+            {
+                id: "ALT009",
+                disasterType: "Volcano",
+                date: "2023-06-20",
+                location: "Big Island, Hawaii, USA",
+                severity: "Medium",
+                affectedAreas: "Puna District, Volcano Village",
+                status: "Warning",
+                description: "Increased activity at Kilauea volcano. Lava flow observed within crater. Potential for eruption.",
+                reportedBy: "USGS Hawaiian Volcano Observatory",
+                timestamp: "2023-06-20T14:45:00",
+                coordinates: { lat: 19.4069, lng: -155.2834 },
+                evacuationOrders: "None at this time",
+                emergencyContacts: "Emergency Services: 911, Hawaii Civil Defense: (808) 935-0031"
+            },
+            {
+                id: "ALT010",
+                disasterType: "Heatwave",
+                date: "2023-08-01",
+                location: "Phoenix, Arizona, USA",
+                severity: "High",
+                affectedAreas: "Maricopa County, Pinal County, Pima County",
+                status: "Active",
+                description: "Extreme heat warning with temperatures expected to reach 115°F. Heat index values up to 120°F.",
+                reportedBy: "National Weather Service",
+                timestamp: "2023-08-01T10:30:00",
+                coordinates: { lat: 33.4484, lng: -112.0740 },
+                evacuationOrders: "None",
+                emergencyContacts: "Emergency Services: 911, Arizona Department of Health Services: (602) 542-1025"
+            }
+        ];
+
+        // Initialize storage with sample data if empty
+        StorageUtils.initializeWithSampleData('registeredAlerts', sampleAlerts);
+
+        // Get registered alerts from localStorage - using direct access for reliability
+        let registeredAlerts = [];
+
+        try {
+            // Direct localStorage access - most reliable method
+            const directAlerts = JSON.parse(localStorage.getItem('registeredAlerts') || '[]');
+            console.log('Loaded alerts via direct access:', directAlerts);
+            registeredAlerts = directAlerts;
+
+            // Backup method using StorageUtils
+            const utilsAlerts = StorageUtils.loadData('registeredAlerts', []);
+            console.log('Loaded alerts via StorageUtils:', utilsAlerts);
+
+            // Use whichever has more alerts
+            if (utilsAlerts.length > directAlerts.length) {
+                console.log('Using StorageUtils alerts as they contain more items');
+                registeredAlerts = utilsAlerts;
+            }
+
+            // Log the final alerts being used
+            console.log('FINAL ALERTS BEING USED:', registeredAlerts);
+        } catch (error) {
+            console.error('Error loading alerts:', error);
+            registeredAlerts = [];
+        }
+
+        // If no alerts are found, use the sample alerts
+        if (!registeredAlerts || registeredAlerts.length === 0) {
+            console.log('No alerts found in localStorage, using sample alerts');
+            registeredAlerts = sampleAlerts;
+            // Save sample alerts to localStorage using both methods
+            localStorage.setItem('registeredAlerts', JSON.stringify(sampleAlerts));
+            StorageUtils.saveData('registeredAlerts', sampleAlerts);
+        }
+
+        // Initialize DataTable
+        $(document).ready(function() {
+            // Reload alerts from localStorage to ensure we have the latest data
+            try {
+                // Direct localStorage access - most reliable method
+                const freshDirectAlerts = JSON.parse(localStorage.getItem('registeredAlerts') || '[]');
+                console.log('Fresh alerts via direct access:', freshDirectAlerts);
+                registeredAlerts = freshDirectAlerts;
+
+                // Backup method using StorageUtils
+                const freshUtilsAlerts = StorageUtils.loadData('registeredAlerts', []);
+                console.log('Fresh alerts via StorageUtils:', freshUtilsAlerts);
+
+                // Use whichever has more alerts
+                if (freshUtilsAlerts.length > freshDirectAlerts.length) {
+                    console.log('Using StorageUtils alerts as they contain more items');
+                    registeredAlerts = freshUtilsAlerts;
+                }
+
+                // Log the final alerts being used
+                console.log('FINAL ALERTS BEING USED (FRESH):', registeredAlerts);
+
+                // Force the alerts to be an array
+                if (!Array.isArray(registeredAlerts)) {
+                    console.warn('Alerts is not an array, converting to array');
+                    registeredAlerts = Object.values(registeredAlerts);
+                }
+            } catch (error) {
+                console.error('Error reloading alerts:', error);
+                // Keep existing alerts if there was an error
+            }
+
+            // If still no alerts, use sample alerts
+            if (!registeredAlerts || registeredAlerts.length === 0) {
+                console.log('Still no alerts found, using sample alerts');
+                registeredAlerts = sampleAlerts;
+                // Save sample alerts to localStorage using both methods
+                localStorage.setItem('registeredAlerts', JSON.stringify(sampleAlerts));
+                StorageUtils.saveData('registeredAlerts', sampleAlerts);
+            }
+
+            // Populate the table with data
+            console.log('Populating table with alerts:', registeredAlerts);
+            populateAlertsTable(registeredAlerts);
+
+            // Initialize DataTable
+            const table = $('#alertsTable').DataTable({
+                responsive: true,
+                order: [[2, 'desc']], // Sort by date column descending
+                language: {
+                    search: "Quick Search:"
+                }
+            });
+
+            // Apply filters button click event
+            $('#applyFilters').click(function() {
+                applyFilters();
+            });
+
+            // Reset filters button click event
+            $('#resetFilters').click(function() {
+                resetFilters();
+            });
+
+            // Refresh alerts button click event
+            $('#refreshAlerts').click(function() {
+                refreshAlerts();
+            });
+
+            // Close modal when clicking the close button
+            $('.close').click(function() {
+                $('#alertDetailsModal').hide();
+            });
+
+            // Close modal when clicking outside the modal content
+            $(window).click(function(event) {
+                if ($(event.target).is('#alertDetailsModal')) {
+                    $('#alertDetailsModal').hide();
+                }
+            });
+
+            // Display welcome message with user's name
+            const userWelcome = document.getElementById('userWelcome');
+            if (userWelcome && userSession && userSession.fullname) {
+                userWelcome.textContent = `Welcome, ${userSession.fullname}`;
+            }
+
+            // Handle logout
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+
+                    // Get user session
+                    const userSession = JSON.parse(localStorage.getItem('currentUserSession'));
+
+                    // Update session status
+                    if (userSession) {
+                        // Mark session as inactive
+                        userSession.active = false;
+                        localStorage.setItem('currentUserSession', JSON.stringify(userSession));
+
+                        // Update active users list
+                        let activeUsers = JSON.parse(localStorage.getItem('activeUsers') || '[]');
+                        activeUsers = activeUsers.filter(user => user.userId !== userSession.userId);
+                        localStorage.setItem('activeUsers', JSON.stringify(activeUsers));
+                    }
+
+                    // Redirect to login page
+                    window.location.href = 'index.html';
+                });
+            }
+        });
+
+        // Function to populate the alerts table
+        function populateAlertsTable(alerts) {
+            const tableBody = document.getElementById('alertsTableBody');
+            tableBody.innerHTML = '';
+
+            // Check if alerts is valid
+            if (!alerts || !Array.isArray(alerts) || alerts.length === 0) {
+                console.log('No alerts to display or invalid alerts data');
+
+                // Add a row indicating no alerts
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td colspan="8" class="text-center">No alerts found. Create an alert on the Alerts page.</td>
+                `;
+                tableBody.appendChild(row);
+                return;
+            }
+
+            console.log(`Populating table with ${alerts.length} alerts`);
+
+            alerts.forEach(alert => {
+                // Skip invalid alerts
+                if (!alert || typeof alert !== 'object') {
+                    console.warn('Invalid alert object:', alert);
+                    return;
+                }
+
+                const row = document.createElement('tr');
+
+                // Get severity and status with fallbacks
+                const severity = alert.severity || 'Medium';
+                const status = alert.status || 'Active';
+
+                // Create table cells with null/undefined checks
+                row.innerHTML = `
+                    <td>${alert.id || 'N/A'}</td>
+                    <td>${alert.disasterType || 'N/A'}</td>
+                    <td>${alert.date || 'N/A'}</td>
+                    <td>${alert.location || 'N/A'}</td>
+                    <td><span class="severity-badge ${severity.toLowerCase()}">${severity}</span></td>
+                    <td>${alert.affectedAreas || 'N/A'}</td>
+                    <td><span class="status-badge ${status.toLowerCase()}">${status}</span></td>
+                    <td>
+                        <button class="btn-icon view-details" data-id="${alert.id}" title="View Details">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn-icon send-email" data-id="${alert.id}" title="Send Email Alert">
+                            <i class="fas fa-envelope"></i>
+                        </button>
+                    </td>
+                `;
+
+                tableBody.appendChild(row);
+            });
+
+            // Add event listeners to view details buttons
+            document.querySelectorAll('.view-details').forEach(button => {
+                button.addEventListener('click', function() {
+                    const alertId = this.getAttribute('data-id');
+                    showAlertDetails(alertId);
+                });
+            });
+
+            // Add event listeners to send email buttons
+            document.querySelectorAll('.send-email').forEach(button => {
+                button.addEventListener('click', function() {
+                    const alertId = this.getAttribute('data-id');
+                    sendEmailAlert(alertId);
+                });
+            });
+        }
+
+        // Function to apply filters
+        function applyFilters() {
+            const disasterType = document.getElementById('disasterTypeFilter').value;
+            const severity = document.getElementById('severityFilter').value;
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+
+            // Filter the alerts based on selected criteria
+            let filteredAlerts = registeredAlerts.filter(alert => {
+                let matchesType = true;
+                let matchesSeverity = true;
+                let matchesDate = true;
+
+                if (disasterType && alert.disasterType !== disasterType) {
+                    matchesType = false;
+                }
+
+                if (severity && alert.severity !== severity) {
+                    matchesSeverity = false;
+                }
+
+                if (startDate && alert.date < startDate) {
+                    matchesDate = false;
+                }
+
+                if (endDate && alert.date > endDate) {
+                    matchesDate = false;
+                }
+
+                return matchesType && matchesSeverity && matchesDate;
+            });
+
+            // Repopulate the table with filtered data
+            populateAlertsTable(filteredAlerts);
+
+            // Reinitialize DataTable
+            $('#alertsTable').DataTable().destroy();
+            $('#alertsTable').DataTable({
+                responsive: true,
+                order: [[2, 'desc']], // Sort by date column descending
+                language: {
+                    search: "Quick Search:"
+                }
+            });
+        }
+
+        // Function to reset filters
+        function resetFilters() {
+            document.getElementById('disasterTypeFilter').value = '';
+            document.getElementById('severityFilter').value = '';
+            document.getElementById('startDate').value = '';
+            document.getElementById('endDate').value = '';
+
+            // Repopulate the table with all data
+            populateAlertsTable(registeredAlerts);
+
+            // Reinitialize DataTable
+            $('#alertsTable').DataTable().destroy();
+            $('#alertsTable').DataTable({
+                responsive: true,
+                order: [[2, 'desc']], // Sort by date column descending
+                language: {
+                    search: "Quick Search:"
+                }
+            });
+        }
+
+        // Function to refresh alerts from localStorage
+        function refreshAlerts() {
+            console.log('Refreshing alerts from localStorage');
+
+            // Show loading message
+            const loadingMessage = document.createElement('div');
+            loadingMessage.style.position = 'fixed';
+            loadingMessage.style.top = '0';
+            loadingMessage.style.left = '0';
+            loadingMessage.style.width = '100%';
+            loadingMessage.style.height = '100%';
+            loadingMessage.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+            loadingMessage.style.display = 'flex';
+            loadingMessage.style.justifyContent = 'center';
+            loadingMessage.style.alignItems = 'center';
+            loadingMessage.style.zIndex = '9999';
+            loadingMessage.innerHTML = `
+                <div style="background-color: white; padding: 20px; border-radius: 5px; text-align: center;">
+                    <i class="fas fa-sync-alt fa-spin fa-3x"></i>
+                    <p style="margin-top: 10px;">Refreshing alerts...</p>
+                </div>
+            `;
+            document.body.appendChild(loadingMessage);
+
+            // Reload alerts from localStorage using multiple methods for reliability
+            try {
+                // Clear existing alerts first
+                registeredAlerts = [];
+
+                // Method 1: Direct localStorage access (most reliable)
+                try {
+                    const directAlerts = JSON.parse(localStorage.getItem('registeredAlerts') || '[]');
+                    console.log('Refreshed alerts via direct access:', directAlerts);
+
+                    if (Array.isArray(directAlerts) && directAlerts.length > 0) {
+                        registeredAlerts = directAlerts;
+                        console.log('Using direct localStorage alerts:', registeredAlerts.length);
+                    }
+                } catch (directError) {
+                    console.error('Error with direct localStorage access:', directError);
+                }
+
+                // Method 2: Using StorageUtils (backup method)
+                if (!registeredAlerts.length) {
+                    try {
+                        const utilsAlerts = StorageUtils.loadData('registeredAlerts', []);
+                        console.log('Refreshed alerts via StorageUtils:', utilsAlerts);
+
+                        if (Array.isArray(utilsAlerts) && utilsAlerts.length > 0) {
+                            registeredAlerts = utilsAlerts;
+                            console.log('Using StorageUtils alerts:', registeredAlerts.length);
+                        }
+                    } catch (utilsError) {
+                        console.error('Error with StorageUtils access:', utilsError);
+                    }
+                }
+
+                // Method 3: Create a new alert to test storage
+                if (!registeredAlerts.length) {
+                    console.log('No alerts found, creating a test alert');
+
+                    // Create a test alert
+                    const testAlert = {
+                        id: 'TEST' + Date.now(),
+                        disasterType: 'Test Alert',
+                        date: new Date().toISOString().split('T')[0],
+                        location: 'Test Location',
+                        severity: 'Low',
+                        affectedAreas: 'Test Area',
+                        status: 'Active',
+                        description: 'This is a test alert created because no alerts were found.',
+                        reportedBy: 'System',
+                        timestamp: new Date().toISOString(),
+                        evacuationOrders: 'None',
+                        emergencyContacts: 'None'
+                    };
+
+                    // Try to save it using both methods
+                    try {
+                        // Direct method
+                        localStorage.setItem('registeredAlerts', JSON.stringify([testAlert]));
+
+                        // StorageUtils method
+                        StorageUtils.saveData('registeredAlerts', [testAlert]);
+
+                        // Use the test alert
+                        registeredAlerts = [testAlert];
+                        console.log('Created and saved test alert');
+                    } catch (saveError) {
+                        console.error('Error saving test alert:', saveError);
+                    }
+                }
+
+                // Method 4: Use sample alerts as last resort
+                if (!registeredAlerts.length) {
+                    console.log('Still no alerts found, using sample alerts');
+                    registeredAlerts = sampleAlerts;
+
+                    // Try to save sample alerts
+                    try {
+                        localStorage.setItem('registeredAlerts', JSON.stringify(sampleAlerts));
+                        StorageUtils.saveData('registeredAlerts', sampleAlerts);
+                    } catch (sampleError) {
+                        console.error('Error saving sample alerts:', sampleError);
+                    }
+                }
+
+                // Ensure registeredAlerts is an array
+                if (!Array.isArray(registeredAlerts)) {
+                    console.warn('registeredAlerts is not an array, converting');
+                    registeredAlerts = Object.values(registeredAlerts);
+                }
+
+                console.log('FINAL REFRESHED ALERTS:', registeredAlerts);
+
+                // Repopulate the table with refreshed data
+                populateAlertsTable(registeredAlerts);
+
+                // Reinitialize DataTable
+                try {
+                    $('#alertsTable').DataTable().destroy();
+                } catch (dtError) {
+                    console.warn('Error destroying DataTable:', dtError);
+                }
+
+                $('#alertsTable').DataTable({
+                    responsive: true,
+                    order: [[2, 'desc']], // Sort by date column descending
+                    language: {
+                        search: "Quick Search:"
+                    }
+                });
+
+                // Show success message
+                alert(`Alerts refreshed successfully! Found ${registeredAlerts.length} alerts.`);
+            } catch (error) {
+                console.error('Error in refresh process:', error);
+                alert('Error refreshing alerts: ' + error.message);
+            } finally {
+                // Remove loading message
+                if (loadingMessage.parentNode) {
+                    loadingMessage.parentNode.removeChild(loadingMessage);
+                }
+            }
+        }
+
+        // Function to show alert details
+        function showAlertDetails(alertId) {
+            const alert = registeredAlerts.find(a => a.id === alertId);
+
+            if (alert) {
+                const detailsContainer = document.getElementById('alertDetails');
+
+                // Create details HTML
+                detailsContainer.innerHTML = `
+                    <div class="alert-detail-grid">
+                        <div class="detail-item">
+                            <span class="detail-label">Alert ID:</span>
+                            <span class="detail-value">${alert.id}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Disaster Type:</span>
+                            <span class="detail-value">${alert.disasterType}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Date:</span>
+                            <span class="detail-value">${alert.date}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Location:</span>
+                            <span class="detail-value">${alert.location}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Severity:</span>
+                            <span class="detail-value severity-badge ${alert.severity.toLowerCase()}">${alert.severity}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Status:</span>
+                            <span class="detail-value status-badge ${alert.status.toLowerCase()}">${alert.status}</span>
+                        </div>
+                        <div class="detail-item full-width">
+                            <span class="detail-label">Description:</span>
+                            <span class="detail-value">${alert.description}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Reported By:</span>
+                            <span class="detail-value">${alert.reportedBy}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Timestamp:</span>
+                            <span class="detail-value">${alert.timestamp}</span>
+                        </div>
+                        <div class="detail-item full-width">
+                            <span class="detail-label">Affected Areas:</span>
+                            <span class="detail-value">${alert.affectedAreas}</span>
+                        </div>
+                        <div class="detail-item full-width">
+                            <span class="detail-label">Evacuation Orders:</span>
+                            <span class="detail-value">${alert.evacuationOrders}</span>
+                        </div>
+                        <div class="detail-item full-width">
+                            <span class="detail-label">Emergency Contacts:</span>
+                            <span class="detail-value">${alert.emergencyContacts}</span>
+                        </div>
+                    </div>
+                    <div class="detail-actions">
+                        <button class="btn send-email-detail" data-id="${alert.id}">Send Email Alert</button>
+                    </div>
+                `;
+
+                // Add event listener to send email button in details
+                document.querySelector('.send-email-detail').addEventListener('click', function() {
+                    const alertId = this.getAttribute('data-id');
+                    sendEmailAlert(alertId);
+                });
+
+                // Show the modal
+                document.getElementById('alertDetailsModal').style.display = 'block';
+            }
+        }
+
+        // Function to send email alert using EmailJS
+        function sendEmailAlert(alertId) {
+            const alert = registeredAlerts.find(a => a.id === alertId);
+
+            if (alert) {
+                // Get current user session
+                const session = JSON.parse(localStorage.getItem('currentUserSession'));
+                if (!session || !session.active || !session.user || !session.user.email) {
+                    window.alert('Error: User email not found. Please log in again.');
+                    return;
+                }
+
+                // Show loading message
+                const loadingMessage = EmailService.showLoadingMessage();
+
+                // Get current user info
+                const currentUserEmail = session.user.email;
+                const currentUserName = session.user.fullname || session.user.username;
+
+                // First, send email to the current user
+                EmailService.sendEmailWithEmailJS(alert, {
+                    email: currentUserEmail,
+                    name: currentUserName
+                })
+                .then(function(response) {
+                    console.log('Email sent to current user:', response);
+
+                    // Show email confirmation to the current user
+                    EmailService.showEmailConfirmation(alert, {
+                        email: currentUserEmail,
+                        name: currentUserName
+                    }, function() {
+                        // Ask if user wants to send to all users
+                        const sendToAll = confirm('Do you want to send this alert to all registered users based on their preferences?');
+
+                        if (sendToAll) {
+                            // Now send emails to all other users based on their preferences
+                            EmailService.sendAlertToAllUsers(alert)
+                                .then(function(results) {
+                                    console.log('Email sending complete. Results:', results);
+
+                                    // Count successful and failed emails
+                                    const successful = results.filter(r => r.status === 'fulfilled').length;
+                                    const failed = results.filter(r => r.status === 'rejected').length;
+
+                                    // Show success message
+                                    alert(`Email sent to you and ${successful} other users. ${failed} emails failed.`);
+                                })
+                                .catch(function(error) {
+                                    console.error('Error sending emails to all users:', error);
+                                    alert('There was an error sending emails to all users.');
+                                })
+                                .finally(function() {
+                                    // Remove loading message
+                                    EmailService.hideLoadingMessage(loadingMessage);
+                                });
+                        } else {
+                            // Remove loading message
+                            EmailService.hideLoadingMessage(loadingMessage);
+                        }
+                    });
+                })
+                .catch(function(error) {
+                    console.error('Email sending to current user failed:', error);
+
+                    // Show error notification
+                    alert(`Failed to send email alert: ${error.text || error.message || 'Unknown error'}`);
+
+                    // Remove loading message
+                    EmailService.hideLoadingMessage(loadingMessage);
+                });
+            }
+        }
+    </script>
+
+    <!-- Modern UI JavaScript -->
+    <script src="js/modern-ui.js"></script>
+
+</body>
+</html>

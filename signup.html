@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - Disaster Management System</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/modern-theme.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .signup-page {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary-color));
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            padding: var(--spacing-lg) 0;
+        }
+
+        .signup-page::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('https://images.unsplash.com/photo-1717480981075-359e1d348ae1?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTl8fGRpc2FzdGVyJTIwbWFuYWdlbWVudHxlbnwwfHwwfHx8MA%3D%3D') no-repeat center center;
+            background-size: cover;
+            opacity: 0.1;
+            z-index: -1;
+        }
+
+        .signup-container {
+            background-color: var(--white);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+            width: 100%;
+            max-width: 700px;
+            padding: var(--spacing-xl);
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .signup-header {
+            text-align: center;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .signup-header h2 {
+            color: var(--primary-dark);
+            margin-bottom: var(--spacing-sm);
+            font-size: 2rem;
+        }
+
+        .signup-header p {
+            color: var(--dark-gray);
+        }
+
+        .signup-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-lg);
+        }
+
+        .form-group.full-width {
+            grid-column: span 2;
+        }
+
+        .checkbox-section {
+            border: 1px solid var(--light-gray);
+            padding: var(--spacing-md);
+            border-radius: var(--radius-sm);
+            background-color: var(--off-white);
+            margin-top: var(--spacing-sm);
+        }
+
+        .checkbox-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: var(--spacing-sm);
+        }
+
+        .signup-actions {
+            grid-column: span 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: var(--spacing-lg);
+        }
+
+        .signup-btn {
+            min-width: 200px;
+        }
+
+        .login-link {
+            margin-top: var(--spacing-md);
+        }
+
+        .input-with-icon {
+            position: relative;
+        }
+
+        .input-with-icon i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--dark-gray);
+            font-size: 16px;
+        }
+
+        .input-with-icon input {
+            padding-left: 45px;
+        }
+
+        @media (max-width: 768px) {
+            .signup-form {
+                grid-template-columns: 1fr;
+            }
+
+            .form-group.full-width {
+                grid-column: span 1;
+            }
+
+            .signup-actions {
+                grid-column: span 1;
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body class="signup-page">
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">Disaster Management System</a>
+            <button type="button" class="nav-toggle-btn" aria-label="Toggle navigation menu" title="Toggle Menu">
+                <i class="fas fa-bars"></i>
+            </button>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="login.html">Login</a></li>
+                <li><a href="signup.html">Sign Up</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="signup-container">
+        <div class="signup-header">
+            <h2>Create an Account</h2>
+            <p>Fill in the details below to register and get access to disaster alerts and information.</p>
+        </div>
+
+        <form action="#" method="POST" id="signupForm" class="signup-form">
+                <div class="form-group">
+                    <label for="fullname">Full Name</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="fullname" name="fullname" placeholder="Enter your full name" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-user-tag"></i>
+                        <input type="text" id="username" name="username" placeholder="Choose a username" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="email" name="email" placeholder="Enter your email address" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="password" name="password" placeholder="Create a password" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirm_password">Confirm Password</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm your password" required>
+                    </div>
+                </div>
+
+                <div class="form-group full-width">
+                    <label>Email Notification Preferences</label>
+                    <div class="checkbox-section">
+                        <div class="checkbox-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="receiveAlerts" name="receiveAlerts" checked>
+                                <span>Receive email alerts for disasters</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group full-width">
+                    <label>Select disaster types you want to be notified about</label>
+                    <div class="checkbox-section">
+                        <div class="checkbox-options">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="alertAll" name="alertTypes" value="All" checked>
+                                <span>All Types</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="alertEarthquake" name="alertTypes" value="Earthquake">
+                                <span>Earthquake</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="alertFlood" name="alertTypes" value="Flood">
+                                <span>Flood</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="alertHurricane" name="alertTypes" value="Hurricane">
+                                <span>Hurricane</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="alertTsunami" name="alertTypes" value="Tsunami">
+                                <span>Tsunami</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="alertWildfire" name="alertTypes" value="Wildfire">
+                                <span>Wildfire</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="signup-actions">
+                    <button type="submit" class="btn btn-success signup-btn" onclick="handleSignup(event)">
+                        <i class="fas fa-user-plus"></i> Create Account
+                    </button>
+                    <div class="login-link">
+                        <p>Already have an account? <a href="login.html">Login</a></p>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Function to validate email format
+        function isValidEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+
+        // Handle the "All Types" checkbox
+        document.addEventListener('DOMContentLoaded', function() {
+            const allTypesCheckbox = document.getElementById('alertAll');
+            const disasterTypeCheckboxes = document.querySelectorAll('input[name="alertTypes"]:not(#alertAll)');
+
+            // When "All Types" is checked/unchecked
+            allTypesCheckbox.addEventListener('change', function() {
+                disasterTypeCheckboxes.forEach(checkbox => {
+                    checkbox.checked = false;
+                    checkbox.disabled = this.checked;
+                });
+            });
+
+            // When any specific disaster type is checked
+            disasterTypeCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    // If any specific type is checked, uncheck "All Types"
+                    if (this.checked) {
+                        allTypesCheckbox.checked = false;
+                    }
+
+                    // If no specific types are checked, check "All Types"
+                    const anyChecked = Array.from(disasterTypeCheckboxes).some(cb => cb.checked);
+                    if (!anyChecked) {
+                        allTypesCheckbox.checked = true;
+                    }
+                });
+            });
+
+            // Initialize state
+            disasterTypeCheckboxes.forEach(checkbox => {
+                checkbox.disabled = allTypesCheckbox.checked;
+            });
+        });
+
+        // Function to check if username already exists
+        function isUsernameTaken(username) {
+            const users = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+            return users.some(user => user.username.toLowerCase() === username.toLowerCase());
+        }
+
+        // Function to check if email already exists
+        function isEmailTaken(email) {
+            const users = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+            return users.some(user => user.email.toLowerCase() === email.toLowerCase());
+        }
+
+        // Simple signup validation and user registration
+        function handleSignup(event) {
+            event.preventDefault();
+            const fullname = document.getElementById('fullname').value;
+            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm_password').value;
+
+            // Basic validation
+            if (!fullname || !username || !email || !password || !confirmPassword) {
+                alert('Please fill in all fields');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                alert('Passwords do not match');
+                return;
+            }
+
+            if (!isValidEmail(email)) {
+                alert('Please enter a valid email address');
+                return;
+            }
+
+            if (isUsernameTaken(username)) {
+                alert('Username already taken. Please choose another username.');
+                return;
+            }
+
+            if (isEmailTaken(email)) {
+                alert('Email already registered. Please use another email or login.');
+                return;
+            }
+
+            // Get notification preferences
+            const receiveAlerts = document.getElementById('receiveAlerts').checked;
+
+            // Get selected alert types
+            const alertTypes = [];
+            document.querySelectorAll('input[name="alertTypes"]:checked').forEach(checkbox => {
+                alertTypes.push(checkbox.value);
+            });
+
+            // Create user object
+            const newUser = {
+                id: Date.now().toString(),
+                fullname: fullname,
+                username: username,
+                email: email,
+                password: password, // In a real app, this would be hashed
+                dateRegistered: new Date().toISOString(),
+                preferences: {
+                    receiveAlerts: receiveAlerts,
+                    alertTypes: alertTypes
+                }
+            };
+
+            // Get existing users or initialize empty array
+            const users = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+
+            // Add new user
+            users.push(newUser);
+
+            // Save back to localStorage
+            localStorage.setItem('registeredUsers', JSON.stringify(users));
+
+            // Show success notification
+            showNotification('Account created successfully! Redirecting to login page...', 'success');
+
+            // Redirect after a short delay
+            setTimeout(() => {
+                window.location.href = 'login.html';
+            }, 1500);
+        }
+
+        // Function to show notification
+        function showNotification(message, type = 'info') {
+            // Create notification container if it doesn't exist
+            let notificationContainer = document.querySelector('.notification-container');
+
+            if (!notificationContainer) {
+                notificationContainer = document.createElement('div');
+                notificationContainer.className = 'notification-container';
+                document.body.appendChild(notificationContainer);
+            }
+
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `
+                ${message}
+                <button class="notification-close">&times;</button>
+            `;
+
+            notificationContainer.appendChild(notification);
+
+            // Add close button functionality
+            const closeBtn = notification.querySelector('.notification-close');
+            closeBtn.addEventListener('click', function() {
+                notification.classList.add('fade-out');
+                setTimeout(() => {
+                    notification.remove();
+                }, 300);
+            });
+
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.classList.add('fade-out');
+                    setTimeout(() => {
+                        notification.remove();
+                    }, 300);
+                }
+            }, 5000);
+        }
+    </script>
+
+    <!-- Modern UI JavaScript -->
+    <script src="js/modern-ui.js"></script>
+</body>
+</html>
